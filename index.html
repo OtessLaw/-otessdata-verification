@@ -1,0 +1,2560 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="OTESS Phone Number Verification Portal - Verify phone numbers for bulk data bundle orders. Built-in smart normalization and batch rollback management.">
+  <title>OTESS Phone Number Verification Portal</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Google Fonts (Outfit & Inter) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            outfit: ['Outfit', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              50: '#eff6ff',
+              100: '#dbeafe',
+              200: '#bfdbfe',
+              300: '#93c5fd',
+              400: '#60a5fa',
+              500: '#2563eb',
+              600: '#2563eb',
+              700: '#1d4ed8',
+              800: '#1e40af',
+              900: '#1e3a8a',
+            },
+            darkBg: '#0f172a',
+            darkCard: '#1e293b',
+          },
+          borderRadius: {
+            '2xl': '1rem',
+            '3xl': '1.5rem',
+          },
+          boxShadow: {
+            'premium': '0 10px 30px -10px rgba(37, 99, 235, 0.1)',
+            'premium-dark': '0 10px 30px -10px rgba(0, 0, 0, 0.5)',
+          }
+        }
+      }
+    }
+  </script>
+  
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+    h1, h2, h3, .font-outfit {
+      font-family: 'Outfit', sans-serif;
+    }
+    .transition-all {
+      transition-property: all;
+      transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+      transition-duration: 150ms;
+    }
+    .custom-scroll::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .custom-scroll::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .custom-scroll::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 3px;
+    }
+    .dark .custom-scroll::-webkit-scrollbar-thumb {
+      background: #475569;
+    }
+    .fade-in {
+      animation: fadeIn 0.3s ease-out forwards;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body class="h-full bg-slate-50 dark:bg-darkBg text-slate-900 dark:text-slate-100 transition-colors duration-300">
+
+  <!-- ========================================== -->
+  <!-- PUBLIC INTERFACE CONTAINER (NO USER LOGIN) -->
+  <!-- ========================================== -->
+  <div id="public-app" class="min-h-screen flex flex-col justify-between">
+    <!-- Header/Navbar -->
+    <header class="sticky top-0 z-40 bg-white/80 dark:bg-darkCard/80 backdrop-blur-md border-b border-slate-200/50 dark:border-slate-800/50 transition-colors">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between h-16">
+          <div class="flex items-center space-x-3 cursor-pointer" onclick="switchPublicTab('home')">
+            <div class="w-10 h-10 bg-brand-500 rounded-xl flex items-center justify-center text-white shadow-md shadow-brand-500/20">
+              <i data-lucide="shield-check" class="w-6 h-6"></i>
+            </div>
+            <div class="flex flex-col">
+              <span class="font-outfit font-extrabold tracking-tight text-brand-600 dark:text-brand-400 text-lg sm:text-xl leading-none">OtessData</span>
+              <span class="text-[11px] font-semibold text-slate-500 dark:text-slate-400 tracking-wide">OTESS Phone Number Verification</span>
+            </div>
+          </div>
+          
+          <!-- Desktop Nav Links (Public - Instant Access) -->
+          <nav class="hidden md:flex items-center space-x-1">
+            <button onclick="switchPublicTab('home')" id="nav-home" class="px-3 py-2 rounded-lg text-sm font-medium transition-colors text-brand-600 dark:text-brand-400 bg-brand-50 dark:bg-brand-900/30">Home</button>
+            <button onclick="switchPublicTab('verify')" id="nav-verify" class="px-3 py-2 rounded-lg text-sm font-medium transition-colors text-slate-600 dark:text-slate-300 hover:text-brand-500 dark:hover:text-brand-400 hover:bg-slate-100 dark:hover:bg-slate-800">Verify Number</button>
+            <button onclick="switchPublicTab('submit')" id="nav-submit" class="px-3 py-2 rounded-lg text-sm font-medium transition-colors text-slate-600 dark:text-slate-300 hover:text-brand-500 dark:hover:text-brand-400 hover:bg-slate-100 dark:hover:bg-slate-800">Submit Request</button>
+            <button onclick="switchPublicTab('track')" id="nav-track" class="px-3 py-2 rounded-lg text-sm font-medium transition-colors text-slate-600 dark:text-slate-300 hover:text-brand-500 dark:hover:text-brand-400 hover:bg-slate-100 dark:hover:bg-slate-800">Track Submission</button>
+            <button onclick="switchPublicTab('contact')" id="nav-contact" class="px-3 py-2 rounded-lg text-sm font-medium transition-colors text-slate-600 dark:text-slate-300 hover:text-brand-500 dark:hover:text-brand-400 hover:bg-slate-100 dark:hover:bg-slate-800">Support</button>
+          </nav>
+
+          <!-- Utilities (Theme & Admin Login ONLY) -->
+          <div class="flex items-center space-x-3">
+            <button onclick="toggleTheme()" class="p-2.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 dark:text-slate-400 transition-colors" aria-label="Toggle Theme">
+              <i id="theme-icon" data-lucide="moon" class="w-5 h-5"></i>
+            </button>
+            <!-- Admin Access ONLY -->
+            <button onclick="showAdminLogin()" class="hidden sm:flex items-center space-x-2 px-4 py-2 border border-slate-200 dark:border-slate-800 rounded-xl text-sm font-medium text-slate-700 dark:text-slate-200 hover:border-brand-500 hover:text-brand-500 dark:hover:border-brand-400 dark:hover:text-brand-400 transition-all">
+              <i data-lucide="lock" class="w-4 h-4"></i>
+              <span>Login</span>
+            </button>
+            <!-- Mobile Menu Toggle -->
+            <button onclick="toggleMobileNav()" class="md:hidden p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300">
+              <i data-lucide="menu" class="w-6 h-6"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Mobile Nav Menu -->
+    <div id="mobile-nav" class="hidden md:hidden bg-white dark:bg-darkCard border-b border-slate-200 dark:border-slate-800 px-4 py-3 space-y-1">
+      <button onclick="switchPublicTab('home'); toggleMobileNav()" class="w-full text-left px-3 py-2 rounded-lg text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800">Home</button>
+      <button onclick="switchPublicTab('verify'); toggleMobileNav()" class="w-full text-left px-3 py-2 rounded-lg text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800">Verify Number</button>
+      <button onclick="switchPublicTab('submit'); toggleMobileNav()" class="w-full text-left px-3 py-2 rounded-lg text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800">Submit Request</button>
+      <button onclick="switchPublicTab('track'); toggleMobileNav()" class="w-full text-left px-3 py-2 rounded-lg text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800">Track Submission</button>
+      <button onclick="switchPublicTab('contact'); toggleMobileNav()" class="w-full text-left px-3 py-2 rounded-lg text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800">Support</button>
+      <button onclick="showAdminLogin(); toggleMobileNav()" class="w-full text-left px-3 py-2 rounded-lg text-sm font-medium text-brand-500 hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center space-x-2">
+        <i data-lucide="lock" class="w-4 h-4"></i>
+        <span>Login</span>
+      </button>
+    </div>
+
+    <!-- Main Content Area -->
+    <main class="flex-grow">
+      
+      <!-- TAB: HOME -->
+      <section id="tab-home" class="public-tab max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-20 fade-in">
+        <!-- Hero Section -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+          <div class="space-y-6">
+            <div class="inline-flex items-center space-x-2 px-3 py-1 bg-brand-50 dark:bg-brand-900/30 text-brand-600 dark:text-brand-400 rounded-full text-xs font-semibold uppercase tracking-wider">
+              <span class="w-2 h-2 bg-brand-500 rounded-full animate-pulse"></span>
+              <span>OTESS Instant Verification</span>
+            </div>
+            <h1 class="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight text-slate-900 dark:text-white leading-tight">
+              OTESS Phone Number Verification For <span class="bg-gradient-to-r from-brand-500 to-indigo-500 bg-clip-text text-transparent">Data Bundles</span>
+            </h1>
+            <p class="text-lg text-slate-600 dark:text-slate-400 max-w-lg">
+              Check if numbers exist in the OTESS database before placing data bundle orders. Verified numbers show Green, while unverified numbers show Red.
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 pt-2">
+              <button onclick="switchPublicTab('verify')" class="px-6 py-3.5 bg-brand-500 hover:bg-brand-600 text-white rounded-xl font-medium shadow-lg shadow-brand-500/25 transition-all text-center flex items-center justify-center space-x-2">
+                <i data-lucide="search" class="w-5 h-5"></i>
+                <span>Verify Numbers Now</span>
+              </button>
+              <button onclick="switchPublicTab('submit')" class="px-6 py-3.5 bg-white dark:bg-darkCard hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-800 rounded-xl font-medium transition-all text-center flex items-center justify-center space-x-2">
+                <i data-lucide="file-plus" class="w-5 h-5"></i>
+                <span>Submit Number</span>
+              </button>
+            </div>
+          </div>
+          <!-- Hero Illustration -->
+          <div class="flex justify-center">
+            <div class="relative w-full max-w-md h-80 sm:h-96 rounded-3xl bg-gradient-to-tr from-brand-500/10 to-indigo-500/10 border border-slate-200/50 dark:border-slate-800/50 shadow-premium dark:shadow-premium-dark flex items-center justify-center overflow-hidden">
+              <div class="absolute -top-12 -left-12 w-48 h-48 bg-brand-500/20 rounded-full blur-3xl"></div>
+              <div class="absolute -bottom-12 -right-12 w-48 h-48 bg-indigo-500/20 rounded-full blur-3xl"></div>
+              <!-- Mock Interface illustration -->
+              <div class="w-64 bg-white dark:bg-darkCard rounded-2xl shadow-2xl p-6 border border-slate-100 dark:border-slate-800 space-y-4 relative z-10 transition-transform hover:scale-105 duration-300">
+                <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
+                  <div class="flex items-center space-x-2">
+                    <span class="w-3 h-3 rounded-full bg-red-400"></span>
+                    <span class="w-3 h-3 rounded-full bg-yellow-400"></span>
+                    <span class="w-3 h-3 rounded-full bg-green-400"></span>
+                  </div>
+                  <span class="text-[10px] text-slate-400">OTESS Check</span>
+                </div>
+                <div class="p-3 bg-green-500/10 border border-green-500/30 rounded-xl flex items-center space-x-3">
+                  <div class="w-8 h-8 rounded-full bg-green-500 flex items-center justify-center text-white">
+                    <i data-lucide="check" class="w-4 h-4"></i>
+                  </div>
+                  <div>
+                    <h4 class="text-xs font-bold text-green-700 dark:text-green-400">✅ VERIFIED (GREEN)</h4>
+                    <p class="text-[10px] text-green-600 dark:text-green-500">Ready for bundle order</p>
+                  </div>
+                </div>
+                <div class="p-3 bg-red-500/10 border border-red-500/30 rounded-xl flex items-center space-x-3">
+                  <div class="w-8 h-8 rounded-full bg-red-500 flex items-center justify-center text-white">
+                    <i data-lucide="x" class="w-4 h-4"></i>
+                  </div>
+                  <div>
+                    <h4 class="text-xs font-bold text-red-700 dark:text-red-400">❌ NOT VERIFIED (RED)</h4>
+                    <p class="text-[10px] text-red-600 dark:text-red-500">Not in OTESS system</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Features Grid -->
+        <div class="mt-24 grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div class="bg-white dark:bg-darkCard p-6 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-premium dark:shadow-premium-dark hover:border-brand-500 dark:hover:border-brand-500/50 transition-all">
+            <div class="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-xl flex items-center justify-center text-blue-600 dark:text-blue-400 mb-5">
+              <i data-lucide="zap" class="w-6 h-6"></i>
+            </div>
+            <h3 class="text-lg font-bold mb-2">Smart Search</h3>
+            <p class="text-slate-600 dark:text-slate-400 text-sm">
+              Input Ghanaian numbers with +233, 233, or 024 prefixes. The system auto-normalizes numbers to standard format instantly.
+            </p>
+          </div>
+          <div class="bg-white dark:bg-darkCard p-6 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-premium dark:shadow-premium-dark hover:border-brand-500 dark:hover:border-brand-500/50 transition-all">
+            <div class="w-12 h-12 bg-indigo-100 dark:bg-indigo-900/30 rounded-xl flex items-center justify-center text-indigo-600 dark:text-indigo-400 mb-5">
+              <i data-lucide="shield-alert" class="w-6 h-6"></i>
+            </div>
+            <h3 class="text-lg font-bold mb-2">Zero Duplicate Submissions</h3>
+            <p class="text-slate-600 dark:text-slate-400 text-sm">
+              Our system strictly prevents duplicate requests. Once a number is submitted or verified, re-submissions are automatically blocked.
+            </p>
+          </div>
+          <div class="bg-white dark:bg-darkCard p-6 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-premium dark:shadow-premium-dark hover:border-brand-500 dark:hover:border-brand-500/50 transition-all">
+            <div class="w-12 h-12 bg-violet-100 dark:bg-violet-900/30 rounded-xl flex items-center justify-center text-violet-600 dark:text-violet-400 mb-5">
+              <i data-lucide="undo" class="w-6 h-6"></i>
+            </div>
+            <h3 class="text-lg font-bold mb-2">Audited Rollbacks</h3>
+            <p class="text-slate-600 dark:text-slate-400 text-sm">
+              Admin uploaded wrong file? Easily roll back the entire batch, restoring database integrity with detailed audit logs.
+            </p>
+          </div>
+        </div>
+
+        <!-- FAQs -->
+        <div class="mt-28 max-w-3xl mx-auto">
+          <h2 class="text-3xl font-extrabold text-center mb-12">Frequently Asked Questions</h2>
+          <div class="space-y-4">
+            <div class="bg-white dark:bg-darkCard p-6 rounded-2xl border border-slate-100 dark:border-slate-800">
+              <h3 class="text-base font-semibold mb-2">Do I need to sign in or create an account to verify numbers?</h3>
+              <p class="text-slate-600 dark:text-slate-400 text-sm">
+                No! Customers do not need to sign in. Once you tap the portal link, you can immediately verify numbers or submit verification requests.
+              </p>
+            </div>
+            <div class="bg-white dark:bg-darkCard p-6 rounded-2xl border border-slate-100 dark:border-slate-800">
+              <h3 class="text-base font-semibold mb-2">What happens if I try to submit a number twice?</h3>
+              <p class="text-slate-600 dark:text-slate-400 text-sm">
+                The system strictly blocks duplicate submissions. If a number has already been submitted or verified, you will be notified instantly.
+              </p>
+            </div>
+            <div class="bg-white dark:bg-darkCard p-6 rounded-2xl border border-slate-100 dark:border-slate-800">
+              <h3 class="text-base font-semibold mb-2">What if my number shows RED ("Not Verified")?</h3>
+              <p class="text-slate-600 dark:text-slate-400 text-sm">
+                If your number shows Red (Not Verified), click the "Submit Number Now" button to add it to the OTESS registration queue.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB: VERIFY -->
+      <section id="tab-verify" class="public-tab hidden max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 fade-in">
+        <div class="max-w-3xl mx-auto space-y-8">
+          <div class="text-center space-y-2">
+            <h2 class="text-3xl font-extrabold">Verify Phone Numbers</h2>
+            <p class="text-slate-600 dark:text-slate-400">Check if numbers are approved in OTESS system before placing bundle orders</p>
+          </div>
+
+          <!-- Single/Bulk Tab Selectors -->
+          <div class="flex border-b border-slate-200 dark:border-slate-800">
+            <button onclick="toggleVerifyMode('single')" id="verify-mode-single-btn" class="flex-1 pb-3 text-sm font-semibold border-b-2 border-brand-500 text-brand-500 transition-all">Single Verification</button>
+            <button onclick="toggleVerifyMode('bulk')" id="verify-mode-bulk-btn" class="flex-1 pb-3 text-sm font-semibold border-b-2 border-transparent text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 transition-all">Bulk Verification</button>
+          </div>
+
+          <!-- Mode: Single Verification -->
+          <div id="verify-single-form" class="bg-white dark:bg-darkCard rounded-2xl border border-slate-100 dark:border-slate-800 p-6 shadow-premium dark:shadow-premium-dark space-y-4">
+            <div class="space-y-2">
+              <label for="single-phone-input" class="text-sm font-medium">Enter Phone Number</label>
+              <div class="flex gap-3">
+                <div class="relative flex-grow">
+                  <input type="text" id="single-phone-input" placeholder="e.g., 0241234567 or +233241234567" class="w-full pl-4 pr-10 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl focus:outline-none focus:border-brand-500 transition-all">
+                </div>
+                <button onclick="runSingleVerification()" class="px-6 py-3 bg-brand-500 hover:bg-brand-600 text-white font-medium rounded-xl transition-all flex items-center space-x-2">
+                  <i data-lucide="search" class="w-4 h-4"></i>
+                  <span>Verify</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Single Result Card Holder -->
+            <div id="single-verify-result" class="hidden pt-4"></div>
+          </div>
+
+          <!-- Mode: Bulk Verification -->
+          <div id="verify-bulk-form" class="hidden bg-white dark:bg-darkCard rounded-2xl border border-slate-100 dark:border-slate-800 p-6 shadow-premium dark:shadow-premium-dark space-y-4">
+            <div class="space-y-2">
+              <label for="bulk-phone-textarea" class="text-sm font-medium">Paste Numbers (newlines or commas)</label>
+              <textarea id="bulk-phone-textarea" rows="6" placeholder="0241234567&#10;+233549876543&#10;0201112222" class="w-full p-4 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl focus:outline-none focus:border-brand-500 transition-all font-mono text-sm"></textarea>
+            </div>
+            <div class="flex justify-end">
+              <button onclick="runBulkVerification()" class="px-6 py-3 bg-brand-500 hover:bg-brand-600 text-white font-medium rounded-xl transition-all flex items-center space-x-2">
+                <i data-lucide="search" class="w-4 h-4"></i>
+                <span>Verify All</span>
+              </button>
+            </div>
+
+            <!-- Bulk results holder -->
+            <div id="bulk-verify-results-container" class="hidden space-y-6 pt-4 border-t border-slate-100 dark:border-slate-800">
+              <!-- Summary Grid -->
+              <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                <div class="p-4 bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-100 dark:border-slate-800/50 text-center">
+                  <div class="text-2xl font-extrabold text-brand-500" id="bulk-sum-total">0</div>
+                  <div class="text-xs text-slate-500">Total Checked</div>
+                </div>
+                <div class="p-4 bg-green-50 dark:bg-green-950/20 rounded-xl border border-green-500/30 text-center">
+                  <div class="text-2xl font-extrabold text-green-500" id="bulk-sum-verified">0</div>
+                  <div class="text-xs text-green-600 dark:text-green-400 font-bold">VERIFIED (GREEN)</div>
+                </div>
+                <div class="p-4 bg-amber-50 dark:bg-amber-950/20 rounded-xl border border-amber-500/30 text-center">
+                  <div class="text-2xl font-extrabold text-amber-500" id="bulk-sum-pending">0</div>
+                  <div class="text-xs text-amber-600 dark:text-amber-400 font-bold">PENDING</div>
+                </div>
+                <div class="p-4 bg-red-50 dark:bg-red-950/20 rounded-xl border border-red-500/30 text-center">
+                  <div class="text-2xl font-extrabold text-red-500" id="bulk-sum-notfound">0</div>
+                  <div class="text-xs text-red-600 dark:text-red-400 font-bold">NOT VERIFIED (RED)</div>
+                </div>
+              </div>
+
+              <!-- Action buttons -->
+              <div class="flex flex-wrap gap-2">
+                <button onclick="downloadBulkCSV()" class="px-4 py-2 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-semibold hover:border-brand-500 hover:text-brand-500 transition-all flex items-center space-x-1">
+                  <i data-lucide="download" class="w-3.5 h-3.5"></i>
+                  <span>Download CSV</span>
+                </button>
+                <button onclick="copyBulkResults()" class="px-4 py-2 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-semibold hover:border-brand-500 hover:text-brand-500 transition-all flex items-center space-x-1">
+                  <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                  <span>Copy Results</span>
+                </button>
+              </div>
+
+              <!-- Results Table -->
+              <div class="overflow-x-auto rounded-xl border border-slate-200/60 dark:border-slate-800/60">
+                <table class="w-full text-left border-collapse">
+                  <thead>
+                    <tr class="bg-slate-50 dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 text-xs font-semibold uppercase tracking-wider text-slate-500">
+                      <th class="p-3">Phone Number</th>
+                      <th class="p-3">Status Indicator</th>
+                      <th class="p-3">Date</th>
+                      <th class="p-3">Info</th>
+                    </tr>
+                  </thead>
+                  <tbody id="bulk-verify-tbody" class="text-sm divide-y divide-slate-100 dark:divide-slate-800">
+                    <!-- Dynamic Rows -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB: SUBMIT -->
+      <section id="tab-submit" class="public-tab hidden max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 fade-in">
+        <div class="max-w-3xl mx-auto space-y-8">
+          <div class="text-center space-y-2">
+            <h2 class="text-3xl font-extrabold">Submit Numbers for OTESS Verification</h2>
+            <p class="text-slate-600 dark:text-slate-400">Submit unverified numbers to be approved by admins for data bundle orders</p>
+          </div>
+
+          <div class="flex border-b border-slate-200 dark:border-slate-800">
+            <button onclick="toggleSubmitMode('single')" id="submit-mode-single-btn" class="flex-1 pb-3 text-sm font-semibold border-b-2 border-brand-500 text-brand-500 transition-all">Single Submission</button>
+            <button onclick="toggleSubmitMode('bulk')" id="submit-mode-bulk-btn" class="flex-1 pb-3 text-sm font-semibold border-b-2 border-transparent text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 transition-all">Bulk Submission</button>
+          </div>
+
+          <!-- Form: Single Submit -->
+          <div id="submit-single-form" class="bg-white dark:bg-darkCard rounded-2xl border border-slate-100 dark:border-slate-800 p-6 shadow-premium dark:shadow-premium-dark space-y-4">
+            <div class="space-y-2">
+              <label for="single-submit-phone" class="text-sm font-medium">Enter Phone Number</label>
+              <input type="text" id="single-submit-phone" placeholder="e.g., 0241234567" class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl focus:outline-none focus:border-brand-500 transition-all">
+            </div>
+            <div class="flex justify-end">
+              <button onclick="runSingleSubmission()" class="px-6 py-3 bg-brand-500 hover:bg-brand-600 text-white font-medium rounded-xl transition-all flex items-center space-x-2">
+                <i data-lucide="plus-circle" class="w-4 h-4"></i>
+                <span>Submit Number</span>
+              </button>
+            </div>
+            <div id="single-submit-result" class="hidden pt-2"></div>
+          </div>
+
+          <!-- Form: Bulk Submit -->
+          <div id="submit-bulk-form" class="hidden bg-white dark:bg-darkCard rounded-2xl border border-slate-100 dark:border-slate-800 p-6 shadow-premium dark:shadow-premium-dark space-y-4">
+            <div class="space-y-2">
+              <label for="bulk-submit-textarea" class="text-sm font-medium">Paste Numbers (newlines or commas)</label>
+              <textarea id="bulk-submit-textarea" rows="6" placeholder="0241234567&#10;0557654321&#10;0201112222" class="w-full p-4 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl focus:outline-none focus:border-brand-500 transition-all font-mono text-sm"></textarea>
+            </div>
+            <div class="flex justify-end">
+              <button onclick="runBulkSubmission()" class="px-6 py-3 bg-brand-500 hover:bg-brand-600 text-white font-medium rounded-xl transition-all flex items-center space-x-2">
+                <i data-lucide="plus-circle" class="w-4 h-4"></i>
+                <span>Submit All</span>
+              </button>
+            </div>
+
+            <!-- Bulk Submit results tracker -->
+            <div id="bulk-submit-results" class="hidden pt-4 border-t border-slate-100 dark:border-slate-800 space-y-4">
+              <div class="p-4 bg-emerald-500/10 border border-emerald-500/20 rounded-xl flex items-center space-x-3 text-emerald-800 dark:text-emerald-400">
+                <i data-lucide="badge-check" class="w-6 h-6 flex-shrink-0"></i>
+                <div class="text-sm font-medium" id="bulk-submit-msg"></div>
+              </div>
+              <div id="bulk-submit-details" class="text-xs text-slate-500 space-y-1"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB: TRACK -->
+      <section id="tab-track" class="public-tab hidden max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 fade-in">
+        <div class="max-w-3xl mx-auto space-y-8">
+          <div class="text-center space-y-2">
+            <h2 class="text-3xl font-extrabold">Track Submission Status</h2>
+            <p class="text-slate-600 dark:text-slate-400">Track registration progress using Phone Number or Submission ID</p>
+          </div>
+
+          <div class="bg-white dark:bg-darkCard rounded-2xl border border-slate-100 dark:border-slate-800 p-6 shadow-premium dark:shadow-premium-dark space-y-4">
+            <div class="space-y-2">
+              <label for="track-query-input" class="text-sm font-medium">Enter Phone Number or Submission ID (e.g. SUB-12345)</label>
+              <div class="flex gap-3">
+                <input type="text" id="track-query-input" placeholder="e.g., 0241234567 or SUB-93824" class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl focus:outline-none focus:border-brand-500 transition-all">
+                <button onclick="runTracking()" class="px-6 py-3 bg-brand-500 hover:bg-brand-600 text-white font-medium rounded-xl transition-all flex items-center space-x-2">
+                  <i data-lucide="navigation" class="w-4 h-4"></i>
+                  <span>Track</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Timeline Results -->
+            <div id="tracking-results" class="hidden pt-6 border-t border-slate-100 dark:border-slate-800 space-y-6">
+              <!-- Summary bar -->
+              <div class="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-100 dark:border-slate-800/50">
+                <div>
+                  <span class="text-xs text-slate-400 block uppercase font-semibold">Number</span>
+                  <span class="text-base font-bold text-slate-800 dark:text-white" id="track-res-number">024...</span>
+                </div>
+                <div class="text-right">
+                  <span class="text-xs text-slate-400 block uppercase font-semibold">Submission ID</span>
+                  <span class="text-base font-bold text-slate-800 dark:text-white" id="track-res-id">SUB-...</span>
+                </div>
+              </div>
+
+              <!-- Timeline nodes -->
+              <div class="relative pl-8 space-y-8 before:absolute before:left-3 before:top-2 before:bottom-2 before:w-0.5 before:bg-slate-200 dark:before:bg-slate-800">
+                <!-- Node 1: Submitted -->
+                <div class="relative">
+                  <div class="absolute -left-8 top-1.5 w-6.5 h-6.5 rounded-full border-4 border-slate-50 dark:border-darkCard bg-green-500 flex items-center justify-center text-white" id="node-sub-dot">
+                    <i data-lucide="check" class="w-3 h-3"></i>
+                  </div>
+                  <div>
+                    <h4 class="text-sm font-bold">Submitted</h4>
+                    <p class="text-xs text-slate-500">Submission received by the system.</p>
+                    <span class="text-[10px] text-slate-400" id="node-sub-date">19 Jul 2026</span>
+                  </div>
+                </div>
+
+                <!-- Node 2: Processing -->
+                <div class="relative">
+                  <div class="absolute -left-8 top-1.5 w-6.5 h-6.5 rounded-full border-4 border-slate-50 dark:border-darkCard bg-slate-300 dark:bg-slate-700" id="node-proc-dot"></div>
+                  <div>
+                    <h4 class="text-sm font-bold" id="node-proc-title">Processing</h4>
+                    <p class="text-xs text-slate-500" id="node-proc-desc">Waiting for administrator review.</p>
+                    <span class="text-[10px] text-slate-400" id="node-proc-date">-</span>
+                  </div>
+                </div>
+
+                <!-- Node 3: Verified / Rejected -->
+                <div class="relative">
+                  <div class="absolute -left-8 top-1.5 w-6.5 h-6.5 rounded-full border-4 border-slate-50 dark:border-darkCard bg-slate-300 dark:bg-slate-700" id="node-final-dot"></div>
+                  <div>
+                    <h4 class="text-sm font-bold" id="node-final-title">Verified</h4>
+                    <p class="text-xs text-slate-500" id="node-final-desc">Will complete within 48 hours.</p>
+                    <span class="text-[10px] text-slate-400" id="node-final-date">-</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB: CONTACT -->
+      <section id="tab-contact" class="public-tab hidden max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 fade-in">
+        <div class="max-w-3xl mx-auto space-y-8">
+          <div class="text-center space-y-2">
+            <h2 class="text-3xl font-extrabold">Support & Contact</h2>
+            <p class="text-slate-600 dark:text-slate-400">Get in touch with OTESS support for verification assistance</p>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <!-- Contact Card -->
+            <div class="bg-white dark:bg-darkCard rounded-2xl border border-slate-100 dark:border-slate-800 p-6 shadow-premium dark:shadow-premium-dark flex flex-col justify-between space-y-6">
+              <div class="space-y-4">
+                <h3 class="text-lg font-bold">Direct OTESS Channels</h3>
+                <p class="text-sm text-slate-600 dark:text-slate-400">Reach out directly via email or WhatsApp for quick support regarding bundle verification errors.</p>
+                
+                <div class="space-y-3 pt-2">
+                  <a href="https://wa.me/233241234567" target="_blank" class="flex items-center space-x-3 p-3 bg-green-500/10 text-green-700 dark:text-green-400 rounded-xl hover:bg-green-500/20 transition-all font-medium text-sm">
+                    <i data-lucide="message-square" class="w-5 h-5"></i>
+                    <span>Contact via WhatsApp</span>
+                  </a>
+                  <a href="mailto:support@otess.com" class="flex items-center space-x-3 p-3 bg-brand-500/10 text-brand-700 dark:text-brand-400 rounded-xl hover:bg-brand-500/20 transition-all font-medium text-sm">
+                    <i data-lucide="mail" class="w-5 h-5"></i>
+                    <span>support@otess.com</span>
+                  </a>
+                </div>
+              </div>
+
+              <div class="pt-4 border-t border-slate-100 dark:border-slate-800 text-xs text-slate-400 text-center">
+                Operating Hours: Mon - Fri, 8:00 AM - 5:00 PM GMT
+              </div>
+            </div>
+
+            <!-- Support form -->
+            <div class="bg-white dark:bg-darkCard rounded-2xl border border-slate-100 dark:border-slate-800 p-6 shadow-premium dark:shadow-premium-dark space-y-4">
+              <h3 class="text-lg font-bold">Submit a Support Ticket</h3>
+              <div class="space-y-3">
+                <input type="text" placeholder="Your Name" class="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-sm focus:outline-none focus:border-brand-500">
+                <input type="email" placeholder="Your Email" class="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-sm focus:outline-none focus:border-brand-500">
+                <textarea rows="4" placeholder="Describe your issue or order error..." class="w-full p-4 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-sm focus:outline-none focus:border-brand-500"></textarea>
+                <button onclick="alert('Support ticket submitted successfully')" class="w-full py-3 bg-brand-500 hover:bg-brand-600 text-white font-medium rounded-xl transition-all">Submit Ticket</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white dark:bg-darkCard border-t border-slate-200/50 dark:border-slate-800/50 py-8 text-center text-xs text-slate-500 dark:text-slate-400">
+      <div class="max-w-7xl mx-auto px-4 space-y-2">
+        <p>&copy; 2026 OTESS Phone Number Verification. All rights reserved.</p>
+        <p class="text-[10px]">Built for verifying bundle lists before ordering.</p>
+      </div>
+    </footer>
+  </div>
+
+
+  <!-- ========================================== -->
+  <!-- ADMIN PORTAL WRAPPER (HIDDEN BY DEFAULT)  -->
+  <!-- ========================================== -->
+  
+  <!-- ADMIN LOGIN WINDOW -->
+  <div id="admin-login-modal" class="hidden fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 dark:bg-slate-900/80 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-darkCard w-full max-w-md p-8 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-premium dark:shadow-premium-dark space-y-6 fade-in relative">
+      <button onclick="hideAdminLogin()" class="absolute top-4 right-4 p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+
+      <div class="text-center space-y-2">
+        <div class="w-12 h-12 bg-brand-500/10 rounded-2xl mx-auto flex items-center justify-center text-brand-500">
+          <i data-lucide="lock" class="w-6 h-6"></i>
+        </div>
+        <h3 class="text-2xl font-bold">OTESS Admin Login</h3>
+        <p class="text-xs text-slate-500">Log in to manage database verified lists & approve requests</p>
+      </div>
+
+      <div class="space-y-4">
+        <div class="space-y-1">
+          <label for="admin-email" class="text-xs font-semibold text-slate-500">Email Address</label>
+          <input type="email" id="admin-email" value="admin@nvs.com" class="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-sm focus:outline-none focus:border-brand-500">
+        </div>
+        <div class="space-y-1">
+          <label for="admin-password" class="text-xs font-semibold text-slate-500">Password</label>
+          <input type="password" id="admin-password" value="admin123" class="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-sm focus:outline-none focus:border-brand-500">
+        </div>
+        <button onclick="runAdminLogin()" class="w-full py-3 bg-brand-500 hover:bg-brand-600 text-white font-medium rounded-xl transition-all shadow-md shadow-brand-500/20">Sign In</button>
+      </div>
+
+      <div class="text-center">
+        <span class="text-[10px] text-slate-400 bg-slate-50 dark:bg-slate-900 px-3 py-1.5 rounded-md border border-slate-100 dark:border-slate-800/40">Demo Admin: admin@nvs.com / admin123</span>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ADMIN DASHBOARD PANELS (Main Admin Interface) -->
+  <div id="admin-app" class="hidden h-full flex overflow-hidden">
+    <!-- Sidebar Navigation -->
+    <aside class="hidden md:flex flex-col w-64 bg-white dark:bg-darkCard border-r border-slate-200/50 dark:border-slate-800/50 transition-colors">
+      <!-- Sidebar Header -->
+      <div class="flex items-center space-x-3 px-6 h-16 border-b border-slate-200/50 dark:border-slate-800/50">
+        <div class="w-8 h-8 bg-brand-500 rounded-lg flex items-center justify-center text-white">
+          <i data-lucide="shield" class="w-5 h-5"></i>
+        </div>
+        <span class="font-outfit font-bold text-lg text-slate-800 dark:text-white">OtessData Admin</span>
+      </div>
+      
+      <!-- Nav Links -->
+      <nav class="flex-grow p-4 space-y-1 overflow-y-auto custom-scroll">
+        <button onclick="switchAdminTab('dashboard')" id="side-dashboard" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium text-brand-600 dark:text-brand-400 bg-brand-50 dark:bg-brand-900/30 transition-all">
+          <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
+          <span>Dashboard</span>
+        </button>
+        <button onclick="switchAdminTab('verified')" id="side-verified" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white transition-all">
+          <i data-lucide="phone-call" class="w-4 h-4"></i>
+          <span>Verified Numbers</span>
+        </button>
+        <button onclick="switchAdminTab('pending')" id="side-pending" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white transition-all relative">
+          <i data-lucide="clock" class="w-4 h-4"></i>
+          <span>Pending Requests</span>
+          <span id="side-pending-badge" class="absolute right-4 px-2 py-0.5 text-[10px] font-bold bg-amber-500 text-white rounded-full">0</span>
+        </button>
+        <button onclick="switchAdminTab('upload')" id="side-upload" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white transition-all">
+          <i data-lucide="upload-cloud" class="w-4 h-4"></i>
+          <span>Bulk Upload</span>
+        </button>
+        <button onclick="switchAdminTab('batches')" id="side-batches" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white transition-all">
+          <i data-lucide="history" class="w-4 h-4"></i>
+          <span>Upload Batches</span>
+        </button>
+        <button onclick="switchAdminTab('logs')" id="side-logs" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white transition-all">
+          <i data-lucide="file-text" class="w-4 h-4"></i>
+          <span>Activity Logs</span>
+        </button>
+      </nav>
+
+      <!-- Sidebar Footer (Profile / Logout) -->
+      <div class="p-4 border-t border-slate-200/50 dark:border-slate-800/50 space-y-3">
+        <div class="flex items-center space-x-3 px-2">
+          <div class="w-9 h-9 rounded-full bg-brand-500/10 text-brand-500 flex items-center justify-center font-bold text-sm">SA</div>
+          <div>
+            <h4 class="text-xs font-semibold" id="admin-display-name">System Admin</h4>
+            <span class="text-[10px] text-slate-400">super_admin</span>
+          </div>
+        </div>
+        <div class="flex gap-2">
+          <button onclick="toggleTheme()" class="flex-grow p-2 border border-slate-200 dark:border-slate-800 rounded-xl flex items-center justify-center text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800">
+            <i id="theme-icon-admin" data-lucide="moon" class="w-4 h-4"></i>
+          </button>
+          <button onclick="runAdminLogout()" class="flex-grow p-2 border border-red-200 dark:border-red-900/20 text-red-500 hover:bg-red-500/10 rounded-xl flex items-center justify-center space-x-1.5 text-xs font-semibold transition-all">
+            <i data-lucide="log-out" class="w-4 h-4"></i>
+            <span>Logout</span>
+          </button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content Container -->
+    <div class="flex-grow flex flex-col overflow-hidden">
+      <!-- Admin Header (for mobile toggle & view portal link) -->
+      <header class="flex items-center justify-between px-6 h-16 bg-white dark:bg-darkCard border-b border-slate-200/50 dark:border-slate-800/50 transition-colors">
+        <div class="flex items-center space-x-3">
+          <button onclick="toggleMobileAdminSidebar()" class="md:hidden p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300">
+            <i data-lucide="menu" class="w-5 h-5"></i>
+          </button>
+          <h2 class="font-outfit font-bold text-lg md:text-xl" id="admin-panel-title">Dashboard Overview</h2>
+        </div>
+        <button onclick="exitAdminApp()" class="flex items-center space-x-2 px-3 py-1.5 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-semibold text-slate-600 dark:text-slate-300 hover:border-brand-500 hover:text-brand-500 dark:hover:border-brand-400 dark:hover:text-brand-400 transition-all">
+          <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+          <span>View Public Portal</span>
+        </button>
+      </header>
+
+      <!-- Admin Panel Viewport -->
+      <main class="flex-grow overflow-y-auto custom-scroll bg-slate-50 dark:bg-darkBg p-6">
+        
+        <!-- ADMIN TAB: DASHBOARD -->
+        <section id="admin-tab-dashboard" class="admin-tab space-y-6 fade-in">
+          <!-- Summary Cards -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div class="bg-white dark:bg-darkCard p-6 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-premium dark:shadow-premium-dark flex items-center justify-between">
+              <div>
+                <span class="text-xs text-slate-400 font-semibold block uppercase">Verified Numbers</span>
+                <span class="text-3xl font-extrabold block tracking-tight mt-1" id="stat-verified">0</span>
+              </div>
+              <div class="w-12 h-12 bg-green-500/10 text-green-500 rounded-xl flex items-center justify-center">
+                <i data-lucide="check-circle" class="w-6 h-6"></i>
+              </div>
+            </div>
+            <div class="bg-white dark:bg-darkCard p-6 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-premium dark:shadow-premium-dark flex items-center justify-between">
+              <div>
+                <span class="text-xs text-slate-400 font-semibold block uppercase">Pending Queue</span>
+                <span class="text-3xl font-extrabold block tracking-tight mt-1 text-amber-500" id="stat-pending">0</span>
+              </div>
+              <div class="w-12 h-12 bg-amber-500/10 text-amber-500 rounded-xl flex items-center justify-center">
+                <i data-lucide="alert-circle" class="w-6 h-6"></i>
+              </div>
+            </div>
+            <div class="bg-white dark:bg-darkCard p-6 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-premium dark:shadow-premium-dark flex items-center justify-between">
+              <div>
+                <span class="text-xs text-slate-400 font-semibold block uppercase">Today's Uploads</span>
+                <span class="text-3xl font-extrabold block tracking-tight mt-1" id="stat-today">0</span>
+              </div>
+              <div class="w-12 h-12 bg-brand-500/10 text-brand-500 rounded-xl flex items-center justify-center">
+                <i data-lucide="upload" class="w-6 h-6"></i>
+              </div>
+            </div>
+            <div class="bg-white dark:bg-darkCard p-6 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-premium dark:shadow-premium-dark flex items-center justify-between">
+              <div>
+                <span class="text-xs text-slate-400 font-semibold block uppercase">Total Batches</span>
+                <span class="text-3xl font-extrabold block tracking-tight mt-1" id="stat-batches">0</span>
+              </div>
+              <div class="w-12 h-12 bg-purple-500/10 text-purple-500 rounded-xl flex items-center justify-center">
+                <i data-lucide="layers" class="w-6 h-6"></i>
+              </div>
+            </div>
+          </div>
+
+          <!-- Charts Area -->
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- Line Chart (Recharts equivalent) -->
+            <div class="bg-white dark:bg-darkCard p-6 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-premium dark:shadow-premium-dark lg:col-span-2 space-y-4">
+              <h3 class="font-bold text-base">Weekly Upload & Verification Trends</h3>
+              <div class="h-64 relative flex items-center justify-center">
+                <canvas id="weeklyTrendChart"></canvas>
+              </div>
+            </div>
+
+            <!-- Quick Access / Info Cards -->
+            <div class="bg-white dark:bg-darkCard p-6 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-premium dark:shadow-premium-dark space-y-4">
+              <h3 class="font-bold text-base">Quick Shortcuts</h3>
+              <div class="grid grid-cols-2 gap-3">
+                <button onclick="switchAdminTab('upload')" class="p-4 bg-slate-50 dark:bg-slate-900 hover:bg-brand-500/10 hover:border-brand-500 border border-slate-100 dark:border-slate-800/40 rounded-xl text-center transition-all space-y-2 group">
+                  <i data-lucide="upload-cloud" class="w-6 h-6 mx-auto text-slate-400 group-hover:text-brand-500 transition-colors"></i>
+                  <span class="text-xs font-semibold block">Upload File</span>
+                </button>
+                <button onclick="switchAdminTab('pending')" class="p-4 bg-slate-50 dark:bg-slate-900 hover:bg-brand-500/10 hover:border-brand-500 border border-slate-100 dark:border-slate-800/40 rounded-xl text-center transition-all space-y-2 group">
+                  <i data-lucide="users" class="w-6 h-6 mx-auto text-slate-400 group-hover:text-brand-500 transition-colors"></i>
+                  <span class="text-xs font-semibold block">Approve Queue</span>
+                </button>
+                <button onclick="switchAdminTab('verified')" class="p-4 bg-slate-50 dark:bg-slate-900 hover:bg-brand-500/10 hover:border-brand-500 border border-slate-100 dark:border-slate-800/40 rounded-xl text-center transition-all space-y-2 group">
+                  <i data-lucide="phone-call" class="w-6 h-6 mx-auto text-slate-400 group-hover:text-brand-500 transition-colors"></i>
+                  <span class="text-xs font-semibold block">Verified List</span>
+                </button>
+                <button onclick="switchAdminTab('batches')" class="p-4 bg-slate-50 dark:bg-slate-900 hover:bg-brand-500/10 hover:border-brand-500 border border-slate-100 dark:border-slate-800/40 rounded-xl text-center transition-all space-y-2 group">
+                  <i data-lucide="history" class="w-6 h-6 mx-auto text-slate-400 group-hover:text-brand-500 transition-colors"></i>
+                  <span class="text-xs font-semibold block">Batches Log</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Recent Batches Table -->
+          <div class="bg-white dark:bg-darkCard rounded-2xl border border-slate-100 dark:border-slate-800 p-6 shadow-premium dark:shadow-premium-dark space-y-4">
+            <div class="flex items-center justify-between">
+              <h3 class="font-bold text-base">Recent Batches</h3>
+              <button onclick="switchAdminTab('batches')" class="text-xs font-semibold text-brand-500 hover:underline">View All</button>
+            </div>
+            <div class="overflow-x-auto rounded-xl border border-slate-200/50 dark:border-slate-800/50">
+              <table class="w-full text-left">
+                <thead>
+                  <tr class="bg-slate-50 dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 text-xs font-semibold text-slate-500 uppercase">
+                    <th class="p-3">Batch ID</th>
+                    <th class="p-3">File Name</th>
+                    <th class="p-3">Records</th>
+                    <th class="p-3">Added</th>
+                    <th class="p-3">Duplicates</th>
+                    <th class="p-3">Invalid</th>
+                    <th class="p-3">Status</th>
+                  </tr>
+                </thead>
+                <tbody id="dash-recent-batches-tbody" class="text-sm divide-y divide-slate-100 dark:divide-slate-800">
+                  <!-- Dynamic Rows -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- ADMIN TAB: VERIFIED -->
+        <section id="admin-tab-verified" class="admin-tab hidden space-y-6 fade-in">
+          <!-- Actions & Search Bar -->
+          <div class="bg-white dark:bg-darkCard p-6 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-premium dark:shadow-premium-dark flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div class="flex flex-grow max-w-md items-center relative">
+              <i data-lucide="search" class="w-4 h-4 absolute left-4 text-slate-400"></i>
+              <input type="text" id="admin-verified-search" oninput="loadVerifiedAdmin()" placeholder="Search verified numbers..." class="w-full pl-10 pr-4 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-sm focus:outline-none focus:border-brand-500">
+            </div>
+            <div class="flex items-center gap-3">
+              <input type="text" id="manual-add-phone" placeholder="e.g., 0241234567" class="px-4 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-sm focus:outline-none focus:border-brand-500">
+              <button onclick="runManualVerify()" class="px-5 py-2.5 bg-brand-500 hover:bg-brand-600 text-white rounded-xl text-sm font-semibold transition-all flex items-center space-x-1.5">
+                <i data-lucide="plus" class="w-4 h-4"></i>
+                <span>Add Number</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Verified Numbers List -->
+          <div class="bg-white dark:bg-darkCard rounded-2xl border border-slate-100 dark:border-slate-800 shadow-premium dark:shadow-premium-dark overflow-hidden">
+            <div class="overflow-x-auto">
+              <table class="w-full text-left">
+                <thead>
+                  <tr class="bg-slate-50 dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 text-xs font-semibold text-slate-500 uppercase">
+                    <th class="p-4">Phone Number</th>
+                    <th class="p-4">Verification Date</th>
+                    <th class="p-4">Upload Batch</th>
+                    <th class="p-4">Created By</th>
+                    <th class="p-4">Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="admin-verified-tbody" class="text-sm divide-y divide-slate-100 dark:divide-slate-800">
+                  <!-- Dynamic Rows -->
+                </tbody>
+              </table>
+            </div>
+            
+            <!-- Pagination Controls -->
+            <div class="px-6 py-4 bg-slate-50 dark:bg-slate-900/50 border-t border-slate-200/50 dark:border-slate-800/50 flex items-center justify-between text-xs font-medium text-slate-500">
+              <span id="verified-page-info">Showing page 1 of 1</span>
+              <div class="flex items-center gap-2">
+                <button onclick="verifiedPrevPage()" class="p-2 border border-slate-200 dark:border-slate-800 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800"><i data-lucide="chevron-left" class="w-4 h-4"></i></button>
+                <button onclick="verifiedNextPage()" class="p-2 border border-slate-200 dark:border-slate-800 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800"><i data-lucide="chevron-right" class="w-4 h-4"></i></button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ADMIN TAB: PENDING -->
+        <section id="admin-tab-pending" class="admin-tab hidden space-y-6 fade-in">
+          <!-- Filter/Bulk Controls -->
+          <div class="bg-white dark:bg-darkCard p-6 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-premium dark:shadow-premium-dark flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div class="flex gap-2">
+              <button onclick="filterPendingStatus('pending')" id="pend-filter-pending" class="px-4 py-2 rounded-xl text-xs font-semibold bg-amber-500 text-white transition-all">Pending Queue</button>
+              <button onclick="filterPendingStatus('approved')" id="pend-filter-approved" class="px-4 py-2 rounded-xl text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 transition-all">Approved Records</button>
+              <button onclick="filterPendingStatus('rejected')" id="pend-filter-rejected" class="px-4 py-2 rounded-xl text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 transition-all">Rejected Records</button>
+            </div>
+            
+            <div class="flex items-center gap-2" id="bulk-action-panel">
+              <button onclick="runBulkApprove()" class="px-3.5 py-2 bg-green-500 hover:bg-green-600 text-white rounded-xl text-xs font-semibold transition-all flex items-center space-x-1">
+                <i data-lucide="check" class="w-3.5 h-3.5"></i>
+                <span>Bulk Approve</span>
+              </button>
+              <button onclick="runBulkReject()" class="px-3.5 py-2 bg-red-500 hover:bg-red-600 text-white rounded-xl text-xs font-semibold transition-all flex items-center space-x-1">
+                <i data-lucide="x" class="w-3.5 h-3.5"></i>
+                <span>Bulk Reject</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Pending queue list -->
+          <div class="bg-white dark:bg-darkCard rounded-2xl border border-slate-100 dark:border-slate-800 shadow-premium dark:shadow-premium-dark overflow-hidden">
+            <div class="overflow-x-auto">
+              <table class="w-full text-left">
+                <thead>
+                  <tr class="bg-slate-50 dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 text-xs font-semibold text-slate-500 uppercase">
+                    <th class="p-4 w-12 text-center">
+                      <input type="checkbox" id="pending-select-all" onchange="toggleSelectAllPending(this)" class="rounded text-brand-500 border-slate-300 focus:ring-brand-500 w-4 h-4">
+                    </th>
+                    <th class="p-4">Submission ID</th>
+                    <th class="p-4">Phone Number</th>
+                    <th class="p-4">Submission Date</th>
+                    <th class="p-4">Status</th>
+                    <th class="p-4">Estimated Target</th>
+                    <th class="p-4">Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="admin-pending-tbody" class="text-sm divide-y divide-slate-100 dark:divide-slate-800">
+                  <!-- Dynamic Rows -->
+                </tbody>
+              </table>
+            </div>
+            
+            <!-- Pagination -->
+            <div class="px-6 py-4 bg-slate-50 dark:bg-slate-900/50 border-t border-slate-200/50 dark:border-slate-800/50 flex items-center justify-between text-xs font-medium text-slate-500">
+              <span id="pending-page-info">Showing page 1 of 1</span>
+              <div class="flex items-center gap-2">
+                <button onclick="pendingPrevPage()" class="p-2 border border-slate-200 dark:border-slate-800 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800"><i data-lucide="chevron-left" class="w-4 h-4"></i></button>
+                <button onclick="pendingNextPage()" class="p-2 border border-slate-200 dark:border-slate-800 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800"><i data-lucide="chevron-right" class="w-4 h-4"></i></button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ADMIN TAB: UPLOAD -->
+        <section id="admin-tab-upload" class="admin-tab hidden space-y-6 fade-in">
+          <div class="max-w-3xl mx-auto space-y-6">
+            <!-- Upload Box -->
+            <div class="bg-white dark:bg-darkCard rounded-3xl border-2 border-dashed border-slate-200 dark:border-slate-800 p-12 text-center shadow-premium dark:shadow-premium-dark space-y-6 hover:border-brand-500 dark:hover:border-brand-500/50 transition-all relative">
+              <input type="file" id="bulk-file-input" onchange="handleFileSelected(this)" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" accept=".csv,.xlsx,.xls,.txt">
+              
+              <div class="w-16 h-16 bg-brand-500/10 text-brand-500 rounded-2xl mx-auto flex items-center justify-center">
+                <i data-lucide="upload-cloud" class="w-8 h-8"></i>
+              </div>
+              <div class="space-y-1">
+                <h3 class="text-lg font-bold">Select or Drag Phone List File</h3>
+                <p class="text-xs text-slate-500">Supports CSV, Excel (.xlsx, .xls), or Text (.txt) formats</p>
+                <p class="text-[10px] text-slate-400">Max limit: 100,000 phone numbers per upload batch</p>
+              </div>
+              <div id="file-details-panel" class="hidden max-w-sm mx-auto p-3 bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-xl flex items-center justify-between text-xs text-left">
+                <div class="flex items-center space-x-2">
+                  <i data-lucide="file-spreadsheet" class="w-4 h-4 text-emerald-500"></i>
+                  <span class="font-semibold text-slate-700 dark:text-slate-300 truncate max-w-[150px]" id="selected-filename">file.csv</span>
+                </div>
+                <span class="text-slate-400" id="selected-filesize">0 KB</span>
+              </div>
+            </div>
+
+            <!-- Upload Progress Bar -->
+            <div id="upload-progress-panel" class="hidden bg-white dark:bg-darkCard rounded-2xl border border-slate-100 dark:border-slate-800 p-6 shadow-premium dark:shadow-premium-dark space-y-3">
+              <div class="flex justify-between text-xs font-semibold">
+                <span class="text-slate-500">Analyzing and importing numbers...</span>
+                <span id="upload-progress-pct" class="text-brand-500">0%</span>
+              </div>
+              <div class="w-full h-3 bg-slate-100 dark:bg-slate-900 rounded-full overflow-hidden">
+                <div id="upload-progress-bar" class="h-full bg-brand-500 w-0 transition-all duration-300"></div>
+              </div>
+            </div>
+
+            <!-- Upload Results Box -->
+            <div id="upload-results-panel" class="hidden bg-white dark:bg-darkCard rounded-2xl border border-slate-100 dark:border-slate-800 p-6 shadow-premium dark:shadow-premium-dark space-y-6">
+              <div class="flex items-center justify-between">
+                <h3 class="font-bold text-base flex items-center space-x-2">
+                  <i data-lucide="check-circle-2" class="w-5 h-5 text-green-500"></i>
+                  <span>Import Completed Successfully!</span>
+                </h3>
+                <span class="text-xs bg-brand-50 dark:bg-brand-900/30 text-brand-500 font-bold px-3 py-1 rounded-full" id="result-batch-id">BATCH-...</span>
+              </div>
+              
+              <!-- Report Summary grid -->
+              <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 text-center">
+                <div class="p-4 bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-100 dark:border-slate-800">
+                  <div class="text-2xl font-extrabold text-slate-800 dark:text-white" id="res-total">0</div>
+                  <div class="text-xs text-slate-400">Total Uploaded</div>
+                </div>
+                <div class="p-4 bg-green-50 dark:bg-green-950/20 rounded-xl border border-green-100 dark:border-green-900/20">
+                  <div class="text-2xl font-extrabold text-green-500" id="res-added">0</div>
+                  <div class="text-xs text-green-600 dark:text-green-400 font-bold">Added to Verified</div>
+                </div>
+                <div class="p-4 bg-amber-50 dark:bg-amber-950/20 rounded-xl border border-amber-100 dark:border-amber-900/20">
+                  <div class="text-2xl font-extrabold text-amber-500" id="res-duplicates">0</div>
+                  <div class="text-xs text-amber-600 dark:text-amber-400">Duplicate Check</div>
+                </div>
+                <div class="p-4 bg-red-50 dark:bg-red-950/20 rounded-xl border border-red-100 dark:border-red-900/20">
+                  <div class="text-2xl font-extrabold text-red-500" id="res-invalid">0</div>
+                  <div class="text-xs text-red-600 dark:text-red-400">Invalid Format</div>
+                </div>
+              </div>
+
+              <!-- Action buttons -->
+              <div class="flex justify-end gap-3 border-t border-slate-100 dark:border-slate-800 pt-4">
+                <button onclick="switchAdminTab('batches')" class="px-5 py-2.5 border border-slate-200 dark:border-slate-800 rounded-xl text-sm font-semibold hover:border-brand-500 hover:text-brand-500 transition-all">View Upload History</button>
+                <button onclick="resetUploadPanel()" class="px-5 py-2.5 bg-brand-500 hover:bg-brand-600 text-white rounded-xl text-sm font-semibold transition-all">Upload Another File</button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ADMIN TAB: BATCHES -->
+        <section id="admin-tab-batches" class="admin-tab hidden space-y-6 fade-in">
+          <!-- Batch items history list -->
+          <div class="bg-white dark:bg-darkCard rounded-2xl border border-slate-100 dark:border-slate-800 shadow-premium dark:shadow-premium-dark overflow-hidden">
+            <div class="overflow-x-auto">
+              <table class="w-full text-left">
+                <thead>
+                  <tr class="bg-slate-50 dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 text-xs font-semibold text-slate-500 uppercase">
+                    <th class="p-4">Batch ID</th>
+                    <th class="p-4">File Name</th>
+                    <th class="p-4">Upload Date</th>
+                    <th class="p-4">Records</th>
+                    <th class="p-4">Added</th>
+                    <th class="p-4">Duplicates</th>
+                    <th class="p-4">Invalid</th>
+                    <th class="p-4">Status</th>
+                    <th class="p-4 w-28">Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="admin-batches-tbody" class="text-sm divide-y divide-slate-100 dark:divide-slate-800">
+                  <!-- Dynamic Rows -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- ADMIN TAB: LOGS -->
+        <section id="admin-tab-logs" class="admin-tab hidden space-y-6 fade-in">
+          <div class="bg-white dark:bg-darkCard rounded-2xl border border-slate-100 dark:border-slate-800 shadow-premium dark:shadow-premium-dark overflow-hidden">
+            <div class="overflow-x-auto">
+              <table class="w-full text-left">
+                <thead>
+                  <tr class="bg-slate-50 dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 text-xs font-semibold text-slate-500 uppercase">
+                    <th class="p-4">Time</th>
+                    <th class="p-4">Admin Email</th>
+                    <th class="p-4">Action</th>
+                    <th class="p-4">Description</th>
+                    <th class="p-4 w-32">IP Address</th>
+                  </tr>
+                </thead>
+                <tbody id="admin-logs-tbody" class="text-xs divide-y divide-slate-100 dark:divide-slate-800 font-mono">
+                  <!-- Dynamic Rows -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+      </main>
+    </div>
+  </div>
+
+
+  <!-- MOBILE ADMIN SIDEBAR NAV OVERLAY -->
+  <div id="mobile-admin-sidebar" class="hidden fixed inset-0 z-50 overflow-hidden bg-slate-900/60 dark:bg-slate-900/80 backdrop-blur-sm md:hidden">
+    <div class="w-64 bg-white dark:bg-darkCard h-full flex flex-col justify-between shadow-2xl border-r border-slate-200 dark:border-slate-800 animate-slide-right">
+      <div class="p-6 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
+        <div class="flex items-center space-x-3">
+          <div class="w-8 h-8 bg-brand-500 rounded-lg flex items-center justify-center text-white">
+            <i data-lucide="shield" class="w-5 h-5"></i>
+          </div>
+          <span class="font-outfit font-bold text-base text-slate-800 dark:text-white">OTESS Admin</span>
+        </div>
+        <button onclick="toggleMobileAdminSidebar()" class="p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <nav class="flex-grow p-4 space-y-1 overflow-y-auto custom-scroll">
+        <button onclick="switchAdminTab('dashboard'); toggleMobileAdminSidebar()" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800">
+          <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
+          <span>Dashboard</span>
+        </button>
+        <button onclick="switchAdminTab('verified'); toggleMobileAdminSidebar()" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800">
+          <i data-lucide="phone-call" class="w-4 h-4"></i>
+          <span>Verified Numbers</span>
+        </button>
+        <button onclick="switchAdminTab('pending'); toggleMobileAdminSidebar()" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 relative">
+          <i data-lucide="clock" class="w-4 h-4"></i>
+          <span>Pending Requests</span>
+          <span id="side-pending-badge-mobile" class="absolute right-4 px-2 py-0.5 text-[10px] font-bold bg-amber-500 text-white rounded-full">0</span>
+        </button>
+        <button onclick="switchAdminTab('upload'); toggleMobileAdminSidebar()" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800">
+          <i data-lucide="upload-cloud" class="w-4 h-4"></i>
+          <span>Bulk Upload</span>
+        </button>
+        <button onclick="switchAdminTab('batches'); toggleMobileAdminSidebar()" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800">
+          <i data-lucide="history" class="w-4 h-4"></i>
+          <span>Upload Batches</span>
+        </button>
+        <button onclick="switchAdminTab('logs'); toggleMobileAdminSidebar()" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800">
+          <i data-lucide="file-text" class="w-4 h-4"></i>
+          <span>Activity Logs</span>
+        </button>
+      </nav>
+
+      <div class="p-6 border-t border-slate-200 dark:border-slate-800 space-y-4">
+        <div class="flex items-center space-x-3">
+          <div class="w-9 h-9 rounded-full bg-brand-500/10 text-brand-500 flex items-center justify-center font-bold text-sm">SA</div>
+          <div>
+            <h4 class="text-xs font-semibold">System Admin</h4>
+            <span class="text-[10px] text-slate-400">super_admin</span>
+          </div>
+        </div>
+        <button onclick="runAdminLogout(); toggleMobileAdminSidebar()" class="w-full py-2.5 border border-red-200 dark:border-red-900/20 text-red-500 hover:bg-red-500/10 rounded-xl flex items-center justify-center space-x-2 text-xs font-bold transition-all">
+          <i data-lucide="log-out" class="w-4 h-4"></i>
+          <span>Logout</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ========================================== -->
+  <!-- DATABASE & DASHBOARD SIMULATION SCRIPT     -->
+  <!-- ========================================== -->
+  <script>
+    // Initial Seed Data for offline database
+    const initialVerified = [
+      { phoneNumber: '0241234567', verifiedDate: new Date('2026-07-15T10:00:00Z'), batchId: 'BATCH-20260715-001', uploadedBy: 'admin@nvs.com', uploadDate: new Date('2026-07-15T10:00:00Z'), status: 'verified' },
+      { phoneNumber: '0547654321', verifiedDate: new Date('2026-07-16T14:30:00Z'), batchId: 'BATCH-20260716-001', uploadedBy: 'admin@nvs.com', uploadDate: new Date('2026-07-16T14:30:00Z'), status: 'verified' },
+      { phoneNumber: '0209998888', verifiedDate: new Date('2026-07-18T09:15:00Z'), batchId: 'BATCH-20260718-001', uploadedBy: 'admin@nvs.com', uploadDate: new Date('2026-07-18T09:15:00Z'), status: 'verified' },
+      { phoneNumber: '0591234567', verifiedDate: new Date('2026-07-18T09:15:00Z'), batchId: 'BATCH-20260718-001', uploadedBy: 'admin@nvs.com', uploadDate: new Date('2026-07-18T09:15:00Z'), status: 'verified' }
+    ];
+
+    const initialPending = [
+      { phoneNumber: '0275554444', submittedDate: new Date('2026-07-18T11:00:00Z'), status: 'pending', submissionId: 'SUB-23945', estimatedDate: new Date('2026-07-20T11:00:00Z') },
+      { phoneNumber: '0551112222', submittedDate: new Date('2026-07-19T02:00:00Z'), status: 'pending', submissionId: 'SUB-94023', estimatedDate: new Date('2026-07-21T02:00:00Z') },
+      { phoneNumber: '0245006007', submittedDate: new Date('2026-07-17T12:00:00Z'), status: 'rejected', submissionId: 'SUB-10492', estimatedDate: new Date('2026-07-19T12:00:00Z') }
+    ];
+
+    const initialBatches = [
+      { batchId: 'BATCH-20260715-001', filename: 'verified_list_july15.xlsx', uploadedBy: 'admin@nvs.com', date: new Date('2026-07-15T10:00:00Z'), total: 5, added: 4, duplicates: 1, invalid: 0, status: 'active' },
+      { batchId: 'BATCH-20260716-001', filename: 'mtn_data_export.csv', uploadedBy: 'admin@nvs.com', date: new Date('2026-07-16T14:30:00Z'), total: 200, added: 180, duplicates: 15, invalid: 5, status: 'active' },
+      { batchId: 'BATCH-20260718-001', filename: 'bundle_fixes.txt', uploadedBy: 'admin@nvs.com', date: new Date('2026-07-18T09:15:00Z'), total: 2, added: 2, duplicates: 0, invalid: 0, status: 'active' }
+    ];
+
+    const initialLogs = [
+      { admin: 'admin@nvs.com', action: 'Login', description: 'Administrator logged in successfully', ip: '192.168.1.15', time: new Date('2026-07-19T04:11:00Z') },
+      { admin: 'admin@nvs.com', action: 'Batch Upload', description: 'Uploaded file bundle_fixes.txt (Batch BATCH-20260718-001)', ip: '192.168.1.15', time: new Date('2026-07-18T09:15:00Z') },
+      { admin: 'admin@nvs.com', action: 'Login', description: 'Administrator logged in successfully', ip: '192.168.1.15', time: new Date('2026-07-18T09:00:00Z') }
+    ];
+
+    // DB Loader and Saver
+    const loadDB = (key, defaultVal) => {
+      const data = localStorage.getItem(`otess_${key}`);
+      return data ? JSON.parse(data) : defaultVal;
+    };
+
+    const saveDB = (key, val) => {
+      localStorage.setItem(`otess_${key}`, JSON.stringify(val));
+    };
+
+    // State Store
+    let verifiedDb = loadDB('verified', initialVerified);
+    let pendingDb = loadDB('pending', initialPending);
+    let batchesDb = loadDB('batches', initialBatches);
+    let logsDb = loadDB('logs', initialLogs);
+    let currentUser = loadDB('user', null);
+
+    // Save states to trigger initial local storage setup
+    saveDB('verified', verifiedDb);
+    saveDB('pending', pendingDb);
+    saveDB('batches', batchesDb);
+    saveDB('logs', logsDb);
+
+    // Normalization Utility
+    const normalizePhone = (input) => {
+      if (!input) return { isValid: false, normalized: null };
+      let digits = input.trim().replace(/\D/g, '');
+      if (digits.startsWith('233')) {
+        digits = '0' + digits.slice(3);
+      }
+      if ((digits.startsWith('2') || digits.startsWith('5')) && digits.length === 9) {
+        digits = '0' + digits;
+      }
+      
+      const isValidLength = digits.length === 10;
+      const startsWithZero = digits.startsWith('0');
+      const validPrefix = /^(023|024|025|026|027|028|020|050|053|054|055|056|057|059)/.test(digits);
+      const isValid = isValidLength && startsWithZero && validPrefix;
+      
+      return { isValid, normalized: isValid ? digits : null, original: input };
+    };
+
+    // UI Tab Navigation
+    function switchPublicTab(tabId) {
+      document.querySelectorAll('.public-tab').forEach(el => el.classList.add('hidden'));
+      document.getElementById(`tab-${tabId}`).classList.remove('hidden');
+      
+      // Update nav link styles
+      const activeNavClass = 'text-brand-600 dark:text-brand-400 bg-brand-50 dark:bg-brand-900/30';
+      const inactiveNavClass = 'text-slate-600 dark:text-slate-300 hover:text-brand-500 dark:hover:text-brand-400 hover:bg-slate-100 dark:hover:bg-slate-800';
+      
+      ['home', 'verify', 'submit', 'track', 'contact'].forEach(t => {
+        const btn = document.getElementById(`nav-${t}`);
+        if (t === tabId) {
+          btn.className = `px-3 py-2 rounded-lg text-sm font-medium transition-colors ${activeNavClass}`;
+        } else {
+          btn.className = `px-3 py-2 rounded-lg text-sm font-medium transition-colors ${inactiveNavClass}`;
+        }
+      });
+    }
+
+    function toggleMobileNav() {
+      const menu = document.getElementById('mobile-nav');
+      menu.classList.toggle('hidden');
+    }
+
+    // Light/Dark Theme management
+    function initTheme() {
+      const stored = localStorage.getItem('otess_theme') || 'light';
+      if (stored === 'dark') {
+        document.documentElement.classList.add('dark');
+        document.getElementById('theme-icon').setAttribute('data-lucide', 'sun');
+        document.getElementById('theme-icon-admin').setAttribute('data-lucide', 'sun');
+      } else {
+        document.documentElement.classList.remove('dark');
+        document.getElementById('theme-icon').setAttribute('data-lucide', 'moon');
+        document.getElementById('theme-icon-admin').setAttribute('data-lucide', 'moon');
+      }
+      lucide.createIcons();
+    }
+
+    function toggleTheme() {
+      const isDark = document.documentElement.classList.toggle('dark');
+      localStorage.setItem('otess_theme', isDark ? 'dark' : 'light');
+      
+      const themeIcon = document.getElementById('theme-icon');
+      const themeIconAdmin = document.getElementById('theme-icon-admin');
+      
+      if (isDark) {
+        themeIcon.setAttribute('data-lucide', 'sun');
+        themeIconAdmin.setAttribute('data-lucide', 'sun');
+      } else {
+        themeIcon.setAttribute('data-lucide', 'moon');
+        themeIconAdmin.setAttribute('data-lucide', 'moon');
+      }
+      lucide.createIcons();
+    }
+
+    // Public Verification Forms
+    let verifyMode = 'single';
+    function toggleVerifyMode(mode) {
+      verifyMode = mode;
+      const singleBtn = document.getElementById('verify-mode-single-btn');
+      const bulkBtn = document.getElementById('verify-mode-bulk-btn');
+      const singleForm = document.getElementById('verify-single-form');
+      const bulkForm = document.getElementById('verify-bulk-form');
+
+      if (mode === 'single') {
+        singleBtn.className = 'flex-1 pb-3 text-sm font-semibold border-b-2 border-brand-500 text-brand-500 transition-all';
+        bulkBtn.className = 'flex-1 pb-3 text-sm font-semibold border-b-2 border-transparent text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 transition-all';
+        singleForm.classList.remove('hidden');
+        bulkForm.classList.add('hidden');
+      } else {
+        bulkBtn.className = 'flex-1 pb-3 text-sm font-semibold border-b-2 border-brand-500 text-brand-500 transition-all';
+        singleBtn.className = 'flex-1 pb-3 text-sm font-semibold border-b-2 border-transparent text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 transition-all';
+        bulkForm.classList.remove('hidden');
+        singleForm.classList.add('hidden');
+      }
+    }
+
+    function runSingleVerification() {
+      const phoneInput = document.getElementById('single-phone-input').value;
+      const resultBox = document.getElementById('single-verify-result');
+      
+      const { isValid, normalized } = normalizePhone(phoneInput);
+      
+      if (!isValid) {
+        resultBox.innerHTML = `
+          <div class="p-4 bg-red-500/10 border border-red-500/30 text-red-500 rounded-xl text-sm flex items-center space-x-2">
+            <i data-lucide="alert-triangle" class="w-5 h-5 flex-shrink-0"></i>
+            <span>Invalid number length or prefix. Enter Ghana number (e.g. 0241234567).</span>
+          </div>
+        `;
+        resultBox.classList.remove('hidden');
+        lucide.createIcons();
+        return;
+      }
+
+      // Check verified (GREEN)
+      const verified = verifiedDb.find(v => v.phoneNumber === normalized && v.status === 'verified');
+      if (verified) {
+        resultBox.innerHTML = `
+          <div class="p-4 bg-green-500/10 border border-green-500/30 text-green-700 dark:text-green-400 rounded-xl space-y-2">
+            <div class="flex items-center space-x-2 text-green-600 dark:text-green-400">
+              <i data-lucide="check-circle" class="w-5 h-5 flex-shrink-0 text-green-500"></i>
+              <span class="font-bold text-base">✅ VERIFIED</span>
+            </div>
+            <p class="text-sm font-semibold text-green-800 dark:text-green-300">This number has been verified in the OTESS system.</p>
+            <div class="text-xs text-green-700 dark:text-green-400 space-y-1 pt-1 border-t border-green-500/20">
+              <div>Verification Date: ${new Date(verified.verifiedDate).toLocaleDateString()}</div>
+              <div>Verification Batch: ${verified.batchId || 'MANUAL-ENTRY'}</div>
+            </div>
+          </div>
+        `;
+        resultBox.classList.remove('hidden');
+        lucide.createIcons();
+        return;
+      }
+
+      // Check pending (AMBER)
+      const pending = pendingDb.find(p => p.phoneNumber === normalized);
+      if (pending) {
+        if (pending.status === 'pending') {
+          const position = pendingDb.filter(p => p.status === 'pending' && new Date(p.submittedDate) < new Date(pending.submittedDate)).length + 1;
+          
+          resultBox.innerHTML = `
+            <div class="p-4 bg-amber-500/10 border border-amber-500/30 text-amber-700 dark:text-amber-400 rounded-xl space-y-2">
+              <div class="flex items-center space-x-2 text-amber-600 dark:text-amber-400">
+                <i data-lucide="clock" class="w-5 h-5 flex-shrink-0 text-amber-500"></i>
+                <span class="font-bold text-base">🟡 PENDING</span>
+              </div>
+              <p class="text-sm font-semibold text-amber-800 dark:text-amber-300">Your number is in the OTESS submission queue.</p>
+              <div class="text-xs text-amber-700 dark:text-amber-400 space-y-1 pt-1 border-t border-amber-500/20">
+                <div>Submission ID: ${pending.submissionId}</div>
+                <div>Current Queue Position: <span class="font-bold text-amber-500">${position}</span></div>
+                <div>Estimated Verification: 48 Hours</div>
+              </div>
+            </div>
+          `;
+        } else if (pending.status === 'rejected') {
+          resultBox.innerHTML = `
+            <div class="p-4 bg-red-500/10 border border-red-500/30 text-red-700 dark:text-red-400 rounded-xl space-y-2">
+              <div class="flex items-center space-x-2 text-red-600 dark:text-red-400">
+                <i data-lucide="x-circle" class="w-5 h-5 flex-shrink-0 text-red-500"></i>
+                <span class="font-bold text-base">❌ REJECTED</span>
+              </div>
+              <p class="text-sm text-red-700 dark:text-red-300 font-medium">This number submission was rejected by administration.</p>
+            </div>
+          `;
+        }
+        resultBox.classList.remove('hidden');
+        lucide.createIcons();
+        return;
+      }
+
+      // Not found (RED)
+      resultBox.innerHTML = `
+        <div class="p-4 bg-red-500/10 border border-red-500/30 text-red-700 dark:text-red-400 rounded-xl space-y-3">
+          <div class="flex items-center space-x-2 text-red-600 dark:text-red-400">
+            <i data-lucide="x-circle" class="w-5 h-5 flex-shrink-0 text-red-500"></i>
+            <span class="font-bold text-base">❌ NOT VERIFIED</span>
+          </div>
+          <p class="text-sm text-red-700 dark:text-red-300 font-medium">This number has not been verified in the OTESS system.</p>
+          <button onclick="switchPublicTab('submit')" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-xl text-xs font-bold transition-all flex items-center space-x-1.5">
+            <i data-lucide="plus-circle" class="w-3.5 h-3.5"></i>
+            <span>Submit Number Now</span>
+          </button>
+        </div>
+      `;
+      resultBox.classList.remove('hidden');
+      lucide.createIcons();
+    }
+
+    let currentBulkResults = [];
+    function runBulkVerification() {
+      const textareaVal = document.getElementById('bulk-phone-textarea').value;
+      const list = textareaVal.split(/[\n,]+/).map(n => n.trim()).filter(Boolean);
+      
+      if (list.length === 0) {
+        alert('Please paste or write some numbers first.');
+        return;
+      }
+
+      currentBulkResults = [];
+      let totalChecked = list.length;
+      let verifiedCount = 0;
+      let pendingCount = 0;
+      let notFoundCount = 0;
+      let invalidCount = 0;
+
+      list.forEach(num => {
+        const { isValid, normalized } = normalizePhone(num);
+        if (!isValid) {
+          currentBulkResults.push({ original: num, phoneNumber: num, status: 'invalid', date: '-', info: 'Invalid prefix/length' });
+          invalidCount++;
+          return;
+        }
+
+        const verified = verifiedDb.find(v => v.phoneNumber === normalized && v.status === 'verified');
+        if (verified) {
+          currentBulkResults.push({ original: num, phoneNumber: normalized, status: 'verified', date: new Date(verified.verifiedDate).toLocaleDateString(), info: 'Ready for bundle' });
+          verifiedCount++;
+          return;
+        }
+
+        const pending = pendingDb.find(p => p.phoneNumber === normalized);
+        if (pending) {
+          if (pending.status === 'pending') {
+            currentBulkResults.push({ original: num, phoneNumber: normalized, status: 'pending', date: new Date(pending.submittedDate).toLocaleDateString(), info: pending.submissionId });
+            pendingCount++;
+          } else {
+            currentBulkResults.push({ original: num, phoneNumber: normalized, status: 'rejected', date: '-', info: `Rejected: ${pending.submissionId}` });
+            notFoundCount++;
+          }
+          return;
+        }
+
+        currentBulkResults.push({ original: num, phoneNumber: normalized, status: 'not_found', date: '-', info: 'Not submitted' });
+        notFoundCount++;
+      });
+
+      // Update summaries
+      document.getElementById('bulk-sum-total').innerText = totalChecked;
+      document.getElementById('bulk-sum-verified').innerText = verifiedCount;
+      document.getElementById('bulk-sum-pending').innerText = pendingCount;
+      document.getElementById('bulk-sum-notfound').innerText = notFoundCount + invalidCount;
+
+      // Fill table
+      const tbody = document.getElementById('bulk-verify-tbody');
+      tbody.innerHTML = '';
+      
+      currentBulkResults.forEach(r => {
+        let statusBadge = '';
+        if (r.status === 'verified') {
+          statusBadge = `<span class="px-2.5 py-0.5 rounded-full text-xs bg-green-500/10 text-green-600 dark:text-green-400 font-bold border border-green-500/20">🟢 VERIFIED</span>`;
+        } else if (r.status === 'pending') {
+          statusBadge = `<span class="px-2.5 py-0.5 rounded-full text-xs bg-amber-500/10 text-amber-600 dark:text-amber-400 font-bold border border-amber-500/20">🟡 PENDING</span>`;
+        } else if (r.status === 'invalid') {
+          statusBadge = `<span class="px-2.5 py-0.5 rounded-full text-xs bg-red-500/10 text-red-500 font-bold border border-red-500/20">🔴 INVALID</span>`;
+        } else {
+          statusBadge = `<span class="px-2.5 py-0.5 rounded-full text-xs bg-red-500/10 text-red-600 dark:text-red-400 font-bold border border-red-500/20">🔴 NOT VERIFIED</span>`;
+        }
+
+        tbody.innerHTML += `
+          <tr class="hover:bg-slate-50/50 dark:hover:bg-slate-900/30">
+            <td class="p-3 font-mono">${r.phoneNumber}</td>
+            <td class="p-3">${statusBadge}</td>
+            <td class="p-3 text-xs text-slate-400">${r.date}</td>
+            <td class="p-3 text-xs text-slate-500">${r.info}</td>
+          </tr>
+        `;
+      });
+
+      document.getElementById('bulk-verify-results-container').classList.remove('hidden');
+      lucide.createIcons();
+    }
+
+    function copyBulkResults() {
+      if (currentBulkResults.length === 0) return;
+      const text = currentBulkResults.map(r => `${r.phoneNumber}\t${r.status}\t${r.info}`).join('\n');
+      navigator.clipboard.writeText(text);
+      alert('Copied results table to clipboard!');
+    }
+
+    function downloadBulkCSV() {
+      if (currentBulkResults.length === 0) return;
+      let csvContent = "data:text/csv;charset=utf-8,Phone Number,Status,Date,Info\n";
+      currentBulkResults.forEach(r => {
+        csvContent += `${r.phoneNumber},${r.status},${r.date},${r.info}\n`;
+      });
+      const encodedUri = encodeURI(csvContent);
+      const link = document.createElement("a");
+      link.setAttribute("href", encodedUri);
+      link.setAttribute("download", `otess_bulk_verification_${Date.now()}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    // Public Submissions Forms (WITH STRICT ZERO-DUPLICATE PREVENTION)
+    let submitMode = 'single';
+    function toggleSubmitMode(mode) {
+      submitMode = mode;
+      const singleBtn = document.getElementById('submit-mode-single-btn');
+      const bulkBtn = document.getElementById('submit-mode-bulk-btn');
+      const singleForm = document.getElementById('submit-single-form');
+      const bulkForm = document.getElementById('submit-bulk-form');
+
+      if (mode === 'single') {
+        singleBtn.className = 'flex-1 pb-3 text-sm font-semibold border-b-2 border-brand-500 text-brand-500 transition-all';
+        bulkBtn.className = 'flex-1 pb-3 text-sm font-semibold border-b-2 border-transparent text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 transition-all';
+        singleForm.classList.remove('hidden');
+        bulkForm.classList.add('hidden');
+      } else {
+        bulkBtn.className = 'flex-1 pb-3 text-sm font-semibold border-b-2 border-brand-500 text-brand-500 transition-all';
+        singleBtn.className = 'flex-1 pb-3 text-sm font-semibold border-b-2 border-transparent text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 transition-all';
+        bulkForm.classList.remove('hidden');
+        singleForm.classList.add('hidden');
+      }
+    }
+
+    function runSingleSubmission() {
+      const phoneInput = document.getElementById('single-submit-phone').value;
+      const resultBox = document.getElementById('single-submit-result');
+      
+      const { isValid, normalized } = normalizePhone(phoneInput);
+      
+      if (!isValid) {
+        resultBox.innerHTML = `
+          <div class="p-3 bg-red-500/10 border border-red-500/30 text-red-500 rounded-xl text-xs font-semibold">
+            Invalid format. Ghana numbers only (e.g. 0241234567).
+          </div>
+        `;
+        resultBox.classList.remove('hidden');
+        return;
+      }
+
+      // 1. Check if ALREADY VERIFIED
+      if (verifiedDb.some(v => v.phoneNumber === normalized && v.status === 'verified')) {
+        resultBox.innerHTML = `
+          <div class="p-4 bg-green-500/10 border border-green-500/30 text-green-700 dark:text-green-400 rounded-xl text-xs space-y-1">
+            <h4 class="font-bold text-sm">✅ Number Already Verified</h4>
+            <p>This number (${normalized}) is already verified in the OTESS database! You can place bundle orders immediately.</p>
+          </div>
+        `;
+        resultBox.classList.remove('hidden');
+        return;
+      }
+
+      // 2. Check if ALREADY SUBMITTED (Strict Duplicate Prevention - ANY STATUS)
+      const existingSubmission = pendingDb.find(p => p.phoneNumber === normalized);
+      if (existingSubmission) {
+        resultBox.innerHTML = `
+          <div class="p-4 bg-amber-500/10 border border-amber-500/30 text-amber-700 dark:text-amber-400 rounded-xl text-xs space-y-1">
+            <h4 class="font-bold text-sm">⚠️ Duplicate Submission Blocked</h4>
+            <p>This number (${normalized}) has <strong>already been submitted</strong> once (Submission ID: <strong>${existingSubmission.submissionId}</strong>).</p>
+            <p class="text-[11px] text-slate-500 dark:text-slate-400 pt-1">The system does not accept duplicate submissions. You can track this submission status in the "Track Submission" tab.</p>
+          </div>
+        `;
+        resultBox.classList.remove('hidden');
+        return;
+      }
+
+      // Create New Submission
+      const randomId = `SUB-${Math.floor(10000 + Math.random() * 90000)}`;
+      const newSubmission = {
+        phoneNumber: normalized,
+        submittedDate: new Date(),
+        status: 'pending',
+        submissionId: randomId,
+        estimatedDate: new Date(Date.now() + 48 * 60 * 60 * 1000)
+      };
+
+      pendingDb.push(newSubmission);
+      saveDB('pending', pendingDb);
+
+      resultBox.innerHTML = `
+        <div class="p-4 bg-green-500/10 border border-green-500/30 text-green-700 dark:text-green-400 rounded-xl space-y-1">
+          <h4 class="font-bold text-sm">Successfully Submitted!</h4>
+          <p class="text-xs">Your OTESS request ID: <span class="font-bold">${randomId}</span> has been created. Processing takes up to 48 hours.</p>
+        </div>
+      `;
+      resultBox.classList.remove('hidden');
+      document.getElementById('single-submit-phone').value = '';
+    }
+
+    function runBulkSubmission() {
+      const textVal = document.getElementById('bulk-submit-textarea').value;
+      const list = textVal.split(/[\n,]+/).map(n => n.trim()).filter(Boolean);
+      
+      if (list.length === 0) {
+        alert('Please enter numbers to submit.');
+        return;
+      }
+
+      const uniqueInputs = [...new Set(list)];
+      let submittedCount = 0;
+      let alreadyVerified = 0;
+      let alreadySubmitted = 0;
+      let invalid = 0;
+
+      uniqueInputs.forEach(num => {
+        const { isValid, normalized } = normalizePhone(num);
+        if (!isValid) {
+          invalid++;
+          return;
+        }
+
+        if (verifiedDb.some(v => v.phoneNumber === normalized && v.status === 'verified')) {
+          alreadyVerified++;
+          return;
+        }
+
+        if (pendingDb.some(p => p.phoneNumber === normalized)) {
+          alreadySubmitted++;
+          return;
+        }
+
+        const randomId = `SUB-${Math.floor(10000 + Math.random() * 90000)}`;
+        pendingDb.push({
+          phoneNumber: normalized,
+          submittedDate: new Date(),
+          status: 'pending',
+          submissionId: randomId,
+          estimatedDate: new Date(Date.now() + 48 * 60 * 60 * 1000)
+        });
+        submittedCount++;
+      });
+
+      saveDB('pending', pendingDb);
+
+      document.getElementById('bulk-submit-msg').innerText = `Bulk submission processed! Queued ${submittedCount} new requests. Duplicates were automatically blocked.`;
+      
+      document.getElementById('bulk-submit-details').innerHTML = `
+        <div>Total Processed: ${uniqueInputs.length}</div>
+        <div class="text-green-500 font-bold">Successfully Queued: ${submittedCount}</div>
+        <div>Already Verified: ${alreadyVerified}</div>
+        <div class="text-amber-500 font-semibold">Duplicates Blocked (Already Submitted): ${alreadySubmitted}</div>
+        <div class="text-red-500">Invalid Format: ${invalid}</div>
+      `;
+      
+      document.getElementById('bulk-submit-results').classList.remove('hidden');
+      document.getElementById('bulk-submit-textarea').value = '';
+      lucide.createIcons();
+    }
+
+    // Public Tracking Form
+    function runTracking() {
+      const query = document.getElementById('track-query-input').value.toUpperCase().trim();
+      const resultsContainer = document.getElementById('tracking-results');
+      
+      if (!query) {
+        alert('Please enter a phone number or request Submission ID.');
+        return;
+      }
+
+      let pending = pendingDb.find(p => p.submissionId === query);
+      
+      if (!pending) {
+        const { isValid, normalized } = normalizePhone(query);
+        if (isValid) {
+          pending = pendingDb.find(p => p.phoneNumber === normalized);
+        }
+      }
+
+      if (!pending) {
+        // Double check verified table for direct numbers
+        const { isValid, normalized } = normalizePhone(query);
+        const verifiedDirect = verifiedDb.find(v => v.phoneNumber === normalized && v.status === 'verified');
+        
+        if (verifiedDirect) {
+          document.getElementById('track-res-number').innerText = verifiedDirect.phoneNumber;
+          document.getElementById('track-res-id').innerText = 'DIRECT-UPLOAD';
+          
+          updateTimelineNode('sub', 'completed', new Date(verifiedDirect.uploadDate).toLocaleDateString());
+          updateTimelineNode('proc', 'completed', new Date(verifiedDirect.verifiedDate).toLocaleDateString());
+          updateTimelineNode('final', 'completed', new Date(verifiedDirect.verifiedDate).toLocaleDateString(), 'Verified', 'Number is verified in OTESS system.');
+          
+          resultsContainer.classList.remove('hidden');
+          lucide.createIcons();
+          return;
+        }
+
+        alert('No record found for details provided.');
+        return;
+      }
+
+      // Fill summary details
+      document.getElementById('track-res-number').innerText = pending.phoneNumber;
+      document.getElementById('track-res-id').innerText = pending.submissionId;
+
+      // Update timelines
+      const isPending = pending.status === 'pending';
+      const isApproved = pending.status === 'approved';
+      const isRejected = pending.status === 'rejected';
+
+      updateTimelineNode('sub', 'completed', new Date(pending.submittedDate).toLocaleDateString());
+
+      if (isPending) {
+        updateTimelineNode('proc', 'active', '-', 'Processing', 'Awaiting OTESS administrator verification.');
+        updateTimelineNode('final', 'pending', '-', 'Verified', 'Estimated completion within 48 hours.');
+      } else if (isApproved) {
+        updateTimelineNode('proc', 'completed', new Date(pending.submittedDate).toLocaleDateString());
+        updateTimelineNode('final', 'completed', new Date().toLocaleDateString(), 'Verified', 'Number successfully verified in OTESS.');
+      } else if (isRejected) {
+        updateTimelineNode('proc', 'completed', new Date(pending.submittedDate).toLocaleDateString());
+        updateTimelineNode('final', 'failed', new Date().toLocaleDateString(), 'Rejected', 'Request rejected. Contact support for details.');
+      }
+
+      resultsContainer.classList.remove('hidden');
+      lucide.createIcons();
+    }
+
+    function updateTimelineNode(nodeKey, status, dateStr, labelText = null, descText = null) {
+      const dot = document.getElementById(`node-${nodeKey}-dot`);
+      const dateEl = document.getElementById(`node-${nodeKey}-date`);
+      
+      if (dateEl) dateEl.innerText = dateStr;
+      if (labelText) {
+        document.getElementById(`node-${nodeKey}-title`).innerText = labelText;
+      }
+      if (descText) {
+        document.getElementById(`node-${nodeKey}-desc`).innerText = descText;
+      }
+
+      if (status === 'completed') {
+        dot.className = "absolute -left-8 top-1.5 w-6.5 h-6.5 rounded-full border-4 border-slate-50 dark:border-darkCard bg-green-500 flex items-center justify-center text-white";
+        dot.innerHTML = `<i data-lucide="check" class="w-3.5 h-3.5"></i>`;
+      } else if (status === 'active') {
+        dot.className = "absolute -left-8 top-1.5 w-6.5 h-6.5 rounded-full border-4 border-slate-50 dark:border-darkCard bg-amber-500 animate-pulse flex items-center justify-center text-white";
+        dot.innerHTML = `<i data-lucide="loader" class="w-3.5 h-3.5 animate-spin"></i>`;
+      } else if (status === 'failed') {
+        dot.className = "absolute -left-8 top-1.5 w-6.5 h-6.5 rounded-full border-4 border-slate-50 dark:border-darkCard bg-red-500 flex items-center justify-center text-white";
+        dot.innerHTML = `<i data-lucide="x" class="w-3.5 h-3.5"></i>`;
+      } else {
+        dot.className = "absolute -left-8 top-1.5 w-6.5 h-6.5 rounded-full border-4 border-slate-50 dark:border-darkCard bg-slate-300 dark:bg-slate-700";
+        dot.innerHTML = '';
+      }
+    }
+
+
+    // ==========================================
+    // ADMINISTRATIVE PORTAL SCRIPT               -->
+    // ==========================================
+    let dashboardChart = null;
+
+    function showAdminLogin() {
+      document.getElementById('admin-login-modal').classList.remove('hidden');
+    }
+
+    function hideAdminLogin() {
+      document.getElementById('admin-login-modal').classList.add('hidden');
+    }
+
+    function runAdminLogin() {
+      const email = document.getElementById('admin-email').value;
+      const pass = document.getElementById('admin-password').value;
+
+      if (email === 'admin@nvs.com' && pass === 'admin123') {
+        currentUser = { name: 'System Admin', email: 'admin@nvs.com', role: 'super_admin' };
+        saveDB('user', currentUser);
+        
+        // Audit log
+        logsDb.unshift({
+          admin: currentUser.email,
+          action: 'Login',
+          description: 'Administrator logged in successfully',
+          ip: '127.0.0.1',
+          time: new Date()
+        });
+        saveDB('logs', logsDb);
+        
+        hideAdminLogin();
+        enterAdminApp();
+      } else {
+        alert('Invalid email or password.');
+      }
+    }
+
+    function enterAdminApp() {
+      if (!currentUser) return;
+      document.getElementById('public-app').classList.add('hidden');
+      document.getElementById('admin-app').classList.remove('hidden');
+      document.getElementById('admin-display-name').innerText = currentUser.name;
+      
+      switchAdminTab('dashboard');
+    }
+
+    function exitAdminApp() {
+      document.getElementById('admin-app').classList.add('hidden');
+      document.getElementById('public-app').classList.remove('hidden');
+      switchPublicTab('home');
+    }
+
+    function runAdminLogout() {
+      if (confirm('Are you sure you want to log out?')) {
+        currentUser = null;
+        saveDB('user', null);
+        exitAdminApp();
+      }
+    }
+
+    // Admin Navigation
+    function switchAdminTab(tabId) {
+      document.querySelectorAll('.admin-tab').forEach(el => el.classList.add('hidden'));
+      document.getElementById(`admin-tab-${tabId}`).classList.remove('hidden');
+
+      // Update sidebar highlight
+      const activeSideClass = 'w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium text-brand-600 dark:text-brand-400 bg-brand-50 dark:bg-brand-900/30 transition-all';
+      const inactiveSideClass = 'w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white transition-all';
+
+      ['dashboard', 'verified', 'pending', 'upload', 'batches', 'logs'].forEach(t => {
+        const btn = document.getElementById(`side-${t}`);
+        if (btn) btn.className = (t === tabId) ? activeSideClass : inactiveSideClass;
+      });
+
+      // Update Title
+      const titleMap = {
+        dashboard: 'OTESS Dashboard Overview',
+        verified: 'Verified Database Management',
+        pending: 'Pending Submissions Queue',
+        upload: 'Bulk File Upload Portal',
+        batches: 'Batch Log & Rollback History',
+        logs: 'Security & Action Audit Logs'
+      };
+      document.getElementById('admin-panel-title').innerText = titleMap[tabId] || 'Admin';
+
+      // Load specific tab data
+      if (tabId === 'dashboard') {
+        loadDashboardStats();
+      } else if (tabId === 'verified') {
+        loadVerifiedAdmin();
+      } else if (tabId === 'pending') {
+        loadPendingAdmin();
+      } else if (tabId === 'batches') {
+        loadBatchesAdmin();
+      } else if (tabId === 'logs') {
+        loadLogsAdmin();
+      }
+      
+      updateSidebarBadges();
+      lucide.createIcons();
+    }
+
+    function toggleMobileAdminSidebar() {
+      document.getElementById('mobile-admin-sidebar').classList.toggle('hidden');
+    }
+
+    function updateSidebarBadges() {
+      const activeCount = pendingDb.filter(p => p.status === 'pending').length;
+      document.getElementById('side-pending-badge').innerText = activeCount;
+      document.getElementById('side-pending-badge-mobile').innerText = activeCount;
+    }
+
+    // ADMIN: DASHBOARD LOAD
+    function loadDashboardStats() {
+      const activeVerified = verifiedDb.filter(v => v.status === 'verified').length;
+      const activePending = pendingDb.filter(p => p.status === 'pending').length;
+      const totalBatches = batchesDb.length;
+      
+      const startOfToday = new Date();
+      startOfToday.setHours(0,0,0,0);
+      const todayCount = verifiedDb.filter(v => new Date(v.uploadDate) >= startOfToday).length;
+
+      document.getElementById('stat-verified').innerText = activeVerified;
+      document.getElementById('stat-pending').innerText = activePending;
+      document.getElementById('stat-today').innerText = todayCount;
+      document.getElementById('stat-batches').innerText = totalBatches;
+
+      // Populate recent batches table
+      const tbody = document.getElementById('dash-recent-batches-tbody');
+      tbody.innerHTML = '';
+      batchesDb.slice(0, 5).forEach(b => {
+        let statusBadge = b.status === 'active' 
+          ? `<span class="px-2 py-0.5 rounded-full text-[10px] bg-green-500/10 text-green-600 font-bold">Active</span>`
+          : `<span class="px-2 py-0.5 rounded-full text-[10px] bg-red-500/10 text-red-500 font-bold">Rolled Back</span>`;
+
+        tbody.innerHTML += `
+          <tr>
+            <td class="p-3 font-semibold font-mono text-xs">${b.batchId}</td>
+            <td class="p-3 max-w-[150px] truncate text-xs" title="${b.filename}">${b.filename}</td>
+            <td class="p-3 font-mono text-xs">${b.total}</td>
+            <td class="p-3 font-mono text-xs text-green-500">+${b.added}</td>
+            <td class="p-3 font-mono text-xs text-slate-400">${b.duplicates}</td>
+            <td class="p-3 font-mono text-xs text-red-500">${b.invalid}</td>
+            <td class="p-3">${statusBadge}</td>
+          </tr>
+        `;
+      });
+
+      // Chart.js initialization
+      initDashboardCharts();
+    }
+
+    function initDashboardCharts() {
+      const ctx = document.getElementById('weeklyTrendChart').getContext('2d');
+      if (dashboardChart) {
+        dashboardChart.destroy();
+      }
+
+      // Generate 7-day data
+      const dates = [];
+      const verifiedCounts = [];
+      const pendingCounts = [];
+
+      for (let i = 6; i >= 0; i--) {
+        const d = new Date();
+        d.setDate(d.getDate() - i);
+        dates.push(d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
+        
+        // Query count for chart
+        d.setHours(0,0,0,0);
+        const nextD = new Date(d);
+        nextD.setHours(23,59,59,999);
+
+        const vC = verifiedDb.filter(v => {
+          const vd = new Date(v.uploadDate);
+          return vd >= d && vd <= nextD;
+        }).length;
+
+        const pC = pendingDb.filter(p => {
+          const pd = new Date(p.submittedDate);
+          return pd >= d && pd <= nextD;
+        }).length;
+
+        verifiedCounts.push(vC);
+        pendingCounts.push(pC);
+      }
+
+      const isDark = document.documentElement.classList.contains('dark');
+      const gridColor = isDark ? '#334155' : '#e2e8f0';
+      const textColor = isDark ? '#94a3b8' : '#64748b';
+
+      dashboardChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: dates,
+          datasets: [
+            {
+              label: 'Verified Numbers Added',
+              data: verifiedCounts,
+              borderColor: '#10b981',
+              backgroundColor: 'rgba(16, 185, 129, 0.05)',
+              borderWidth: 2,
+              tension: 0.3,
+              fill: true
+            },
+            {
+              label: 'Pending Submissions',
+              data: pendingCounts,
+              borderColor: '#f59e0b',
+              backgroundColor: 'rgba(245, 158, 11, 0.05)',
+              borderWidth: 2,
+              tension: 0.3,
+              fill: true
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              labels: { color: textColor, font: { family: 'Inter', size: 11 } }
+            }
+          },
+          scales: {
+            x: {
+              grid: { color: gridColor },
+              ticks: { color: textColor, font: { family: 'Inter', size: 10 } }
+            },
+            y: {
+              grid: { color: gridColor },
+              ticks: { color: textColor, font: { family: 'Inter', size: 10 }, stepSize: 1 },
+              beginAtZero: true
+            }
+          }
+        }
+      });
+    }
+
+
+    // ADMIN: VERIFIED NUMBERS TABLE
+    let verifiedPage = 1;
+    const verifiedLimit = 10;
+    
+    function loadVerifiedAdmin() {
+      const search = document.getElementById('admin-verified-search').value.toLowerCase().trim();
+      const tbody = document.getElementById('admin-verified-tbody');
+      tbody.innerHTML = '';
+
+      let list = verifiedDb.filter(v => v.status === 'verified');
+      if (search) {
+        list = list.filter(v => v.phoneNumber.includes(search));
+      }
+
+      // Paginate
+      const total = list.length;
+      const pages = Math.ceil(total / verifiedLimit) || 1;
+      if (verifiedPage > pages) verifiedPage = pages;
+      
+      const startIdx = (verifiedPage - 1) * verifiedLimit;
+      const pageList = list.slice(startIdx, startIdx + verifiedLimit);
+
+      pageList.forEach(v => {
+        tbody.innerHTML += `
+          <tr class="hover:bg-slate-50/50 dark:hover:bg-slate-900/30">
+            <td class="p-4 font-mono font-semibold">${v.phoneNumber}</td>
+            <td class="p-4 text-xs text-slate-500">${new Date(v.verifiedDate).toLocaleString()}</td>
+            <td class="p-4 font-mono text-xs text-slate-400">${v.batchId || 'MANUAL-ENTRY'}</td>
+            <td class="p-4 text-xs">${v.uploadedBy}</td>
+            <td class="p-4">
+              <button onclick="runDeleteVerified('${v.phoneNumber}')" class="p-1.5 text-red-500 hover:bg-red-500/10 rounded-lg transition-all" title="Remove verification status">
+                <i data-lucide="trash-2" class="w-4 h-4"></i>
+              </button>
+            </td>
+          </tr>
+        `;
+      });
+
+      document.getElementById('verified-page-info').innerText = `Showing page ${verifiedPage} of ${pages} (${total} total numbers)`;
+      lucide.createIcons();
+    }
+
+    function verifiedPrevPage() {
+      if (verifiedPage > 1) {
+        verifiedPage--;
+        loadVerifiedAdmin();
+      }
+    }
+    
+    function verifiedNextPage() {
+      const search = document.getElementById('admin-verified-search').value.toLowerCase().trim();
+      let list = verifiedDb.filter(v => v.status === 'verified');
+      if (search) list = list.filter(v => v.phoneNumber.includes(search));
+      const pages = Math.ceil(list.length / verifiedLimit) || 1;
+
+      if (verifiedPage < pages) {
+        verifiedPage++;
+        loadVerifiedAdmin();
+      }
+    }
+
+    function runManualVerify() {
+      const inputVal = document.getElementById('manual-add-phone').value;
+      const { isValid, normalized } = normalizePhone(inputVal);
+
+      if (!isValid) {
+        alert('Invalid phone number format. Ghana numbers only.');
+        return;
+      }
+
+      if (verifiedDb.some(v => v.phoneNumber === normalized && v.status === 'verified')) {
+        alert('Number is already verified.');
+        return;
+      }
+
+      // Add to database
+      verifiedDb.unshift({
+        phoneNumber: normalized,
+        verifiedDate: new Date(),
+        batchId: null,
+        uploadedBy: currentUser.email,
+        uploadDate: new Date(),
+        status: 'verified'
+      });
+      saveDB('verified', verifiedDb);
+
+      // Auto approve pending
+      const pending = pendingDb.find(p => p.phoneNumber === normalized && p.status === 'pending');
+      if (pending) {
+        pending.status = 'approved';
+        saveDB('pending', pendingDb);
+      }
+
+      // Audit Log
+      logsDb.unshift({
+        admin: currentUser.email,
+        action: 'Manual Add',
+        description: `Manually added verified number: ${normalized}`,
+        ip: '127.0.0.1',
+        time: new Date()
+      });
+      saveDB('logs', logsDb);
+
+      document.getElementById('manual-add-phone').value = '';
+      loadVerifiedAdmin();
+      alert(`Successfully verified number: ${normalized}`);
+    }
+
+    function runDeleteVerified(phone) {
+      if (confirm(`Remove verification status for number: ${phone}?`)) {
+        verifiedDb = verifiedDb.filter(v => v.phoneNumber !== phone);
+        saveDB('verified', verifiedDb);
+
+        // Update approved request if any back to rejected/pending
+        const pending = pendingDb.find(p => p.phoneNumber === phone && p.status === 'approved');
+        if (pending) {
+          pending.status = 'rejected';
+          saveDB('pending', pendingDb);
+        }
+
+        // Audit Log
+        logsDb.unshift({
+          admin: currentUser.email,
+          action: 'Delete Verified',
+          description: `Removed verification status for: ${phone}`,
+          ip: '127.0.0.1',
+          time: new Date()
+        });
+        saveDB('logs', logsDb);
+
+        loadVerifiedAdmin();
+      }
+    }
+
+
+    // ADMIN: PENDING QUEUE MANAGEMENT
+    let pendingPage = 1;
+    const pendingLimit = 10;
+    let pendingFilter = 'pending'; // pending, approved, rejected
+
+    function filterPendingStatus(status) {
+      pendingFilter = status;
+      
+      const activeBtnClass = 'px-4 py-2 rounded-xl text-xs font-semibold bg-amber-500 text-white transition-all';
+      const inactiveBtnClass = 'px-4 py-2 rounded-xl text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 transition-all';
+      
+      document.getElementById('pend-filter-pending').className = pendingFilter === 'pending' ? activeBtnClass : inactiveBtnClass;
+      document.getElementById('pend-filter-approved').className = pendingFilter === 'approved' ? 'px-4 py-2 rounded-xl text-xs font-semibold bg-green-500 text-white transition-all' : inactiveBtnClass;
+      document.getElementById('pend-filter-rejected').className = pendingFilter === 'rejected' ? 'px-4 py-2 rounded-xl text-xs font-semibold bg-red-500 text-white transition-all' : inactiveBtnClass;
+      
+      // Hide bulk actions for approved/rejected states
+      const bulkActions = document.getElementById('bulk-action-panel');
+      if (pendingFilter === 'pending') {
+        bulkActions.classList.remove('invisible');
+      } else {
+        bulkActions.classList.add('invisible');
+      }
+
+      pendingPage = 1;
+      loadPendingAdmin();
+    }
+
+    function loadPendingAdmin() {
+      const tbody = document.getElementById('admin-pending-tbody');
+      tbody.innerHTML = '';
+      document.getElementById('pending-select-all').checked = false;
+
+      let list = pendingDb.filter(p => p.status === pendingFilter);
+
+      const total = list.length;
+      const pages = Math.ceil(total / pendingLimit) || 1;
+      if (pendingPage > pages) pendingPage = pages;
+
+      const startIdx = (pendingPage - 1) * pendingLimit;
+      const pageList = list.slice(startIdx, startIdx + pendingLimit);
+
+      pageList.forEach(p => {
+        let statusBadge = '';
+        if (p.status === 'pending') {
+          statusBadge = `<span class="px-2.5 py-0.5 rounded-full text-xs bg-amber-500/10 text-amber-600 font-bold">Pending</span>`;
+        } else if (p.status === 'approved') {
+          statusBadge = `<span class="px-2.5 py-0.5 rounded-full text-xs bg-green-500/10 text-green-600 font-bold">Approved</span>`;
+        } else {
+          statusBadge = `<span class="px-2.5 py-0.5 rounded-full text-xs bg-red-500/10 text-red-500 font-bold">Rejected</span>`;
+        }
+
+        let actionButtons = '';
+        if (p.status === 'pending') {
+          actionButtons = `
+            <div class="flex items-center gap-1.5">
+              <button onclick="approveSingleRequest('${p.submissionId}')" class="p-1.5 text-green-500 hover:bg-green-500/10 rounded-lg" title="Approve Request"><i data-lucide="check" class="w-4 h-4"></i></button>
+              <button onclick="rejectSingleRequest('${p.submissionId}')" class="p-1.5 text-red-500 hover:bg-red-500/10 rounded-lg" title="Reject Request"><i data-lucide="x" class="w-4 h-4"></i></button>
+            </div>
+          `;
+        } else {
+          actionButtons = `
+            <button onclick="deleteSingleRequest('${p.submissionId}')" class="p-1.5 text-red-500 hover:bg-red-500/10 rounded-lg" title="Delete record"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+          `;
+        }
+
+        tbody.innerHTML += `
+          <tr class="hover:bg-slate-50/50 dark:hover:bg-slate-900/30">
+            <td class="p-4 text-center">
+              <input type="checkbox" value="${p.submissionId}" class="pending-row-checkbox rounded text-brand-500 border-slate-300 focus:ring-brand-500 w-4 h-4">
+            </td>
+            <td class="p-4 font-semibold font-mono">${p.submissionId}</td>
+            <td class="p-4 font-mono">${p.phoneNumber}</td>
+            <td class="p-4 text-xs text-slate-500">${new Date(p.submittedDate).toLocaleString()}</td>
+            <td class="p-4">${statusBadge}</td>
+            <td class="p-4 text-xs text-slate-400">${new Date(p.estimatedDate).toLocaleDateString()}</td>
+            <td class="p-4">${actionButtons}</td>
+          </tr>
+        `;
+      });
+
+      document.getElementById('pending-page-info').innerText = `Showing page ${pendingPage} of ${pages} (${total} total requests)`;
+      lucide.createIcons();
+    }
+
+    function pendingPrevPage() {
+      if (pendingPage > 1) {
+        pendingPage--;
+        loadPendingAdmin();
+      }
+    }
+
+    function pendingNextPage() {
+      let list = pendingDb.filter(p => p.status === pendingFilter);
+      const pages = Math.ceil(list.length / pendingLimit) || 1;
+      if (pendingPage < pages) {
+        pendingPage++;
+        loadPendingAdmin();
+      }
+    }
+
+    function toggleSelectAllPending(master) {
+      document.querySelectorAll('.pending-row-checkbox').forEach(box => {
+        box.checked = master.checked;
+      });
+    }
+
+    function getSelectedPendingIds() {
+      const ids = [];
+      document.querySelectorAll('.pending-row-checkbox:checked').forEach(box => {
+        ids.push(box.value);
+      });
+      return ids;
+    }
+
+    function approveSingleRequest(subId) {
+      const p = pendingDb.find(item => item.submissionId === subId);
+      if (!p) return;
+
+      p.status = 'approved';
+      
+      // Insert to verified list
+      if (!verifiedDb.some(v => v.phoneNumber === p.phoneNumber && v.status === 'verified')) {
+        verifiedDb.unshift({
+          phoneNumber: p.phoneNumber,
+          verifiedDate: new Date(),
+          batchId: 'MANUAL-APPROVAL',
+          uploadedBy: currentUser.email,
+          uploadDate: new Date(),
+          status: 'verified'
+        });
+        saveDB('verified', verifiedDb);
+      }
+
+      saveDB('pending', pendingDb);
+
+      // Audit Log
+      logsDb.unshift({
+        admin: currentUser.email,
+        action: 'Approve Request',
+        description: `Approved request ${subId} for phone: ${p.phoneNumber}`,
+        ip: '127.0.0.1',
+        time: new Date()
+      });
+      saveDB('logs', logsDb);
+
+      loadPendingAdmin();
+      updateSidebarBadges();
+    }
+
+    function rejectSingleRequest(subId) {
+      const p = pendingDb.find(item => item.submissionId === subId);
+      if (!p) return;
+
+      p.status = 'rejected';
+      saveDB('pending', pendingDb);
+
+      // Audit Log
+      logsDb.unshift({
+        admin: currentUser.email,
+        action: 'Reject Request',
+        description: `Rejected request ${subId} for phone: ${p.phoneNumber}`,
+        ip: '127.0.0.1',
+        time: new Date()
+      });
+      saveDB('logs', logsDb);
+
+      loadPendingAdmin();
+      updateSidebarBadges();
+    }
+
+    function deleteSingleRequest(subId) {
+      if (confirm('Delete this request log?')) {
+        pendingDb = pendingDb.filter(item => item.submissionId !== subId);
+        saveDB('pending', pendingDb);
+
+        loadPendingAdmin();
+        updateSidebarBadges();
+      }
+    }
+
+    function runBulkApprove() {
+      const ids = getSelectedPendingIds();
+      if (ids.length === 0) {
+        alert('Please select at least one request.');
+        return;
+      }
+
+      let count = 0;
+      ids.forEach(subId => {
+        const p = pendingDb.find(item => item.submissionId === subId && item.status === 'pending');
+        if (p) {
+          p.status = 'approved';
+          if (!verifiedDb.some(v => v.phoneNumber === p.phoneNumber && v.status === 'verified')) {
+            verifiedDb.unshift({
+              phoneNumber: p.phoneNumber,
+              verifiedDate: new Date(),
+              batchId: 'MANUAL-BULK-APPROVAL',
+              uploadedBy: currentUser.email,
+              uploadDate: new Date(),
+              status: 'verified'
+            });
+          }
+          count++;
+        }
+      });
+
+      saveDB('pending', pendingDb);
+      saveDB('verified', verifiedDb);
+
+      // Audit Log
+      logsDb.unshift({
+        admin: currentUser.email,
+        action: 'Bulk Approve',
+        description: `Approved ${count} requests in bulk`,
+        ip: '127.0.0.1',
+        time: new Date()
+      });
+      saveDB('logs', logsDb);
+
+      loadPendingAdmin();
+      updateSidebarBadges();
+      alert(`Bulk approved ${count} numbers.`);
+    }
+
+    function runBulkReject() {
+      const ids = getSelectedPendingIds();
+      if (ids.length === 0) {
+        alert('Please select at least one request.');
+        return;
+      }
+
+      let count = 0;
+      ids.forEach(subId => {
+        const p = pendingDb.find(item => item.submissionId === subId && item.status === 'pending');
+        if (p) {
+          p.status = 'rejected';
+          count++;
+        }
+      });
+
+      saveDB('pending', pendingDb);
+
+      // Audit Log
+      logsDb.unshift({
+        admin: currentUser.email,
+        action: 'Bulk Reject',
+        description: `Rejected ${count} requests in bulk`,
+        ip: '127.0.0.1',
+        time: new Date()
+      });
+      saveDB('logs', logsDb);
+
+      loadPendingAdmin();
+      updateSidebarBadges();
+      alert(`Bulk rejected ${count} numbers.`);
+    }
+
+
+    // ADMIN: BULK UPLOAD FILE SIMULATOR
+    let selectedFile = null;
+    
+    function handleFileSelected(input) {
+      if (input.files.length === 0) return;
+      selectedFile = input.files[0];
+      
+      document.getElementById('selected-filename').innerText = selectedFile.name;
+      document.getElementById('selected-filesize').innerText = (selectedFile.size / 1024).toFixed(1) + ' KB';
+      document.getElementById('file-details-panel').classList.remove('hidden');
+
+      // Trigger automatic progress bar simulation
+      runFileUploadSimulation();
+    }
+
+    function runFileUploadSimulation() {
+      document.getElementById('upload-progress-panel').classList.remove('hidden');
+      
+      let pct = 0;
+      const bar = document.getElementById('upload-progress-bar');
+      const pctText = document.getElementById('upload-progress-pct');
+
+      const interval = setInterval(() => {
+        pct += 10;
+        bar.style.width = pct + '%';
+        pctText.innerText = pct + '%';
+
+        if (pct >= 100) {
+          clearInterval(interval);
+          setTimeout(() => {
+            document.getElementById('upload-progress-panel').classList.add('hidden');
+            processMockUploadData();
+          }, 300);
+        }
+      }, 150);
+    }
+
+    function processMockUploadData() {
+      // Create random batch output numbers
+      const batchDate = new Date();
+      const dateStr = batchDate.getFullYear() + String(batchDate.getMonth()+1).padStart(2,'0') + String(batchDate.getDate()).padStart(2,'0');
+      const countToday = batchesDb.length + 1;
+      const batchId = `BATCH-${dateStr}-${String(countToday).padStart(3, '0')}`;
+
+      // Simulate parsing phone numbers from file
+      let mockTotal = 0;
+      let mockDuplicates = 0;
+      let mockInvalid = 0;
+      let mockAdded = 0;
+      let mockPendingUpdated = 0;
+
+      if (selectedFile.name.endsWith('.txt')) {
+        mockTotal = 5;
+      } else {
+        mockTotal = 250;
+      }
+
+      const mockValidatedToInsert = [];
+      const newNumbersSeed = ['0249876543', '0554443332', '0207778889', '0598889990', '0271112223'];
+
+      for (let i = 0; i < mockTotal; i++) {
+        const roll = Math.random();
+        if (roll < 0.05) {
+          mockInvalid++;
+        } else if (roll < 0.15) {
+          mockDuplicates++;
+        } else {
+          const randNum = newNumbersSeed[i % newNumbersSeed.length] + String(Math.floor(10 + Math.random() * 90));
+          const { isValid, normalized } = normalizePhone(randNum);
+          
+          if (isValid) {
+            const pend = pendingDb.find(p => p.phoneNumber === normalized && p.status === 'pending');
+            if (pend) {
+              pend.status = 'approved';
+              mockPendingUpdated++;
+            }
+
+            mockValidatedToInsert.push({
+              phoneNumber: normalized,
+              verifiedDate: new Date(),
+              batchId,
+              uploadedBy: currentUser.email,
+              uploadDate: new Date(),
+              status: 'verified'
+            });
+            mockAdded++;
+          } else {
+            mockInvalid++;
+          }
+        }
+      }
+
+      // Write results to database
+      if (mockValidatedToInsert.length > 0) {
+        verifiedDb = mockValidatedToInsert.concat(verifiedDb);
+        saveDB('verified', verifiedDb);
+      }
+      
+      if (mockPendingUpdated > 0) {
+        saveDB('pending', pendingDb);
+      }
+
+      // Create Batch entry
+      const batchDetails = {
+        batchId,
+        filename: selectedFile.name,
+        uploadedBy: currentUser.email,
+        date: new Date(),
+        total: mockTotal,
+        added: mockAdded,
+        duplicates: mockDuplicates,
+        invalid: mockInvalid,
+        status: 'active'
+      };
+      
+      batchesDb.unshift(batchDetails);
+      saveDB('batches', batchesDb);
+
+      // Audit Log
+      logsDb.unshift({
+        admin: currentUser.email,
+        action: 'Batch Upload',
+        description: `Uploaded file ${selectedFile.name} (Batch ${batchId}) - Added: ${mockAdded}, Duplicates: ${mockDuplicates}, Invalid: ${mockInvalid}`,
+        ip: '127.0.0.1',
+        time: new Date()
+      });
+      saveDB('logs', logsDb);
+
+      // Update UI Result box
+      document.getElementById('result-batch-id').innerText = batchId;
+      document.getElementById('res-total').innerText = mockTotal;
+      document.getElementById('res-added').innerText = mockAdded;
+      document.getElementById('res-duplicates').innerText = mockDuplicates;
+      document.getElementById('res-invalid').innerText = mockInvalid;
+
+      document.getElementById('upload-results-panel').classList.remove('hidden');
+    }
+
+    function resetUploadPanel() {
+      document.getElementById('bulk-file-input').value = '';
+      document.getElementById('file-details-panel').classList.add('hidden');
+      document.getElementById('upload-results-panel').classList.add('hidden');
+      selectedFile = null;
+    }
+
+
+    // ADMIN: BATCHES HISTORIES & ROLLBACKS
+    function loadBatchesAdmin() {
+      const tbody = document.getElementById('admin-batches-tbody');
+      tbody.innerHTML = '';
+
+      batchesDb.forEach(b => {
+        let statusBadge = '';
+        let actionBtn = '';
+
+        if (b.status === 'active') {
+          statusBadge = `<span class="px-2.5 py-0.5 rounded-full text-xs bg-green-500/10 text-green-600 font-bold">Active</span>`;
+          actionBtn = `
+            <button onclick="runBatchRollback('${b.batchId}')" class="px-3 py-1.5 bg-red-500/10 hover:bg-red-500 text-red-500 hover:text-white rounded-lg text-xs font-semibold transition-all flex items-center space-x-1">
+              <i data-lucide="undo" class="w-3.5 h-3.5"></i>
+              <span>Rollback</span>
+            </button>
+          `;
+        } else {
+          statusBadge = `<span class="px-2.5 py-0.5 rounded-full text-xs bg-red-500/10 text-red-500 font-bold">Rolled Back</span>`;
+          actionBtn = `<span class="text-xs text-slate-400">Restored</span>`;
+        }
+
+        tbody.innerHTML += `
+          <tr class="hover:bg-slate-50/50 dark:hover:bg-slate-900/30">
+            <td class="p-4 font-bold font-mono text-xs">${b.batchId}</td>
+            <td class="p-4 text-xs font-semibold truncate max-w-[120px]" title="${b.filename}">${b.filename}</td>
+            <td class="p-4 text-xs text-slate-500">${new Date(b.date).toLocaleString()}</td>
+            <td class="p-4 font-mono text-xs">${b.total}</td>
+            <td class="p-4 font-mono text-xs text-green-500">+${b.added}</td>
+            <td class="p-4 font-mono text-xs text-slate-400">${b.duplicates}</td>
+            <td class="p-4 font-mono text-xs text-red-500">${b.invalid}</td>
+            <td class="p-4">${statusBadge}</td>
+            <td class="p-4">${actionBtn}</td>
+          </tr>
+        `;
+      });
+
+      lucide.createIcons();
+    }
+
+    function runBatchRollback(batchId) {
+      if (confirm(`⚠️ CRITICAL WARNING!\n\nAre you sure you want to roll back batch ${batchId}?\nThis will permanently delete all verified numbers added in this upload and restore database state.`)) {
+        const phoneNumbersInBatch = verifiedDb
+          .filter(v => v.batchId === batchId)
+          .map(v => v.phoneNumber);
+
+        // 1. Delete verified numbers from batch
+        verifiedDb = verifiedDb.filter(v => v.batchId !== batchId);
+        saveDB('verified', verifiedDb);
+
+        // 2. Revert approved pending requests associated with this batch back to pending
+        pendingDb.forEach(p => {
+          if (phoneNumbersInBatch.includes(p.phoneNumber) && p.status === 'approved') {
+            p.status = 'pending';
+          }
+        });
+        saveDB('pending', pendingDb);
+
+        // 3. Mark batch as rolled back
+        const batch = batchesDb.find(b => b.batchId === batchId);
+        if (batch) {
+          batch.status = 'rolled_back';
+        }
+        saveDB('batches', batchesDb);
+
+        // 4. Audit Log
+        logsDb.unshift({
+          admin: currentUser.email,
+          action: 'Rollback Batch',
+          description: `Rolled back upload batch: ${batchId} (Removed ${phoneNumbersInBatch.length} numbers)`,
+          ip: '127.0.0.1',
+          time: new Date()
+        });
+        saveDB('logs', logsDb);
+
+        loadBatchesAdmin();
+        alert(`Successfully rolled back batch ${batchId}!`);
+      }
+    }
+
+
+    // ADMIN: AUDIT LOGS TABLE
+    function loadLogsAdmin() {
+      const tbody = document.getElementById('admin-logs-tbody');
+      tbody.innerHTML = '';
+
+      logsDb.forEach(log => {
+        tbody.innerHTML += `
+          <tr class="hover:bg-slate-50/50 dark:hover:bg-slate-900/30">
+            <td class="p-4 text-slate-500">${new Date(log.time).toLocaleString()}</td>
+            <td class="p-4 font-semibold">${log.admin}</td>
+            <td class="p-4"><span class="px-2 py-0.5 rounded bg-brand-500/10 text-brand-600 font-bold">${log.action}</span></td>
+            <td class="p-4 text-slate-600 dark:text-slate-300 font-sans">${log.description}</td>
+            <td class="p-4 text-slate-400">${log.ip}</td>
+          </tr>
+        `;
+      });
+    }
+
+    // App Initialization
+    window.addEventListener('load', () => {
+      initTheme();
+      
+      // Auto check logged in admin state
+      if (currentUser) {
+        enterAdminApp();
+      } else {
+        switchPublicTab('home');
+      }
+      
+      updateSidebarBadges();
+    });
+  </script>
+</body>
+</html>
