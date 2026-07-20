@@ -217,61 +217,7 @@
           </div>
         </div>
 
-        <!-- Features Grid -->
-        <div class="mt-24 grid grid-cols-1 md:grid-cols-3 gap-8">
-          <div class="bg-white dark:bg-darkCard p-6 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-premium dark:shadow-premium-dark hover:border-brand-500 dark:hover:border-brand-500/50 transition-all">
-            <div class="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-xl flex items-center justify-center text-blue-600 dark:text-blue-400 mb-5">
-              <i data-lucide="zap" class="w-6 h-6"></i>
-            </div>
-            <h3 class="text-lg font-bold mb-2">Smart Search</h3>
-            <p class="text-slate-600 dark:text-slate-400 text-sm">
-              Input Ghanaian numbers with +233, 233, or 024 prefixes. The system auto-normalizes numbers to standard format instantly.
-            </p>
-          </div>
-          <div class="bg-white dark:bg-darkCard p-6 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-premium dark:shadow-premium-dark hover:border-brand-500 dark:hover:border-brand-500/50 transition-all">
-            <div class="w-12 h-12 bg-indigo-100 dark:bg-indigo-900/30 rounded-xl flex items-center justify-center text-indigo-600 dark:text-indigo-400 mb-5">
-              <i data-lucide="shield-alert" class="w-6 h-6"></i>
-            </div>
-            <h3 class="text-lg font-bold mb-2">Zero Duplicate Submissions</h3>
-            <p class="text-slate-600 dark:text-slate-400 text-sm">
-              Our system strictly prevents duplicate requests. Once a number is submitted or verified, re-submissions are automatically blocked.
-            </p>
-          </div>
-          <div class="bg-white dark:bg-darkCard p-6 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-premium dark:shadow-premium-dark hover:border-brand-500 dark:hover:border-brand-500/50 transition-all">
-            <div class="w-12 h-12 bg-violet-100 dark:bg-violet-900/30 rounded-xl flex items-center justify-center text-violet-600 dark:text-violet-400 mb-5">
-              <i data-lucide="undo" class="w-6 h-6"></i>
-            </div>
-            <h3 class="text-lg font-bold mb-2">Audited Rollbacks</h3>
-            <p class="text-slate-600 dark:text-slate-400 text-sm">
-              Admin uploaded wrong file? Easily roll back the entire batch, restoring database integrity with detailed audit logs.
-            </p>
-          </div>
-        </div>
 
-        <!-- FAQs -->
-        <div class="mt-28 max-w-3xl mx-auto">
-          <h2 class="text-3xl font-extrabold text-center mb-12">Frequently Asked Questions</h2>
-          <div class="space-y-4">
-            <div class="bg-white dark:bg-darkCard p-6 rounded-2xl border border-slate-100 dark:border-slate-800">
-              <h3 class="text-base font-semibold mb-2">Do I need to sign in or create an account to verify numbers?</h3>
-              <p class="text-slate-600 dark:text-slate-400 text-sm">
-                No! Customers do not need to sign in. Once you tap the portal link, you can immediately verify numbers or submit verification requests.
-              </p>
-            </div>
-            <div class="bg-white dark:bg-darkCard p-6 rounded-2xl border border-slate-100 dark:border-slate-800">
-              <h3 class="text-base font-semibold mb-2">What happens if I try to submit a number twice?</h3>
-              <p class="text-slate-600 dark:text-slate-400 text-sm">
-                The system strictly blocks duplicate submissions. If a number has already been submitted or verified, you will be notified instantly.
-              </p>
-            </div>
-            <div class="bg-white dark:bg-darkCard p-6 rounded-2xl border border-slate-100 dark:border-slate-800">
-              <h3 class="text-base font-semibold mb-2">What if my number shows RED ("Not Verified")?</h3>
-              <p class="text-slate-600 dark:text-slate-400 text-sm">
-                If your number shows Red (Not Verified), click the "Submit Number Now" button to add it to the OTESS registration queue.
-              </p>
-            </div>
-          </div>
-        </div>
       </section>
 
       <!-- TAB: VERIFY -->
@@ -581,11 +527,11 @@
       <div class="space-y-4">
         <div class="space-y-1">
           <label for="admin-email" class="text-xs font-semibold text-slate-500">Email Address</label>
-          <input type="email" id="admin-email" placeholder="admin@otess.com" class="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-sm focus:outline-none focus:border-brand-500">
+          <input type="email" id="admin-email" placeholder="Enter Admin Email" class="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-sm focus:outline-none focus:border-brand-500">
         </div>
         <div class="space-y-1">
           <label for="admin-password" class="text-xs font-semibold text-slate-500">Password</label>
-          <input type="password" id="admin-password" placeholder="••••••••" class="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-sm focus:outline-none focus:border-brand-500">
+          <input type="password" id="admin-password" placeholder="Enter Admin Password" class="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-sm focus:outline-none focus:border-brand-500">
         </div>
         <button onclick="runAdminLogin()" class="w-full py-3 bg-brand-500 hover:bg-brand-600 text-white font-medium rounded-xl transition-all shadow-md shadow-brand-500/20">Sign In</button>
       </div>
@@ -2574,12 +2520,10 @@
     window.addEventListener('load', () => {
       initTheme();
       
-      // Auto check logged in admin state
-      if (currentUser) {
-        enterAdminApp();
-      } else {
-        switchPublicTab('home');
-      }
+      // Always start fresh on public home page and clear admin session on refresh
+      currentUser = null;
+      saveDB('user', null);
+      switchPublicTab('home');
       
       updateSidebarBadges();
     });
