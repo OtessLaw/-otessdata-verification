@@ -1421,10 +1421,6 @@
       lucide.createIcons();
     }
 
-      document.getElementById('bulk-verify-results-container').classList.remove('hidden');
-      lucide.createIcons();
-    }
-
     function copyBulkResults() {
       if (currentBulkResults.length === 0) return;
       const text = currentBulkResults.map(r => `${r.phoneNumber}\t${r.status}\t${r.info}`).join('\n');
