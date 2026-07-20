@@ -1332,6 +1332,16 @@
       let notFoundCount = 0;
       let invalidCount = 0;
 
+      // 1. Build fast O(1) Lookup Maps to prevent browser freezing
+      const verifiedMap = new Map();
+      verifiedDb.forEach(v => {
+        if (v.status === 'verified') verifiedMap.set(v.phoneNumber, v);
+      });
+
+      const pendingMap = new Map();
+      pendingDb.forEach(p => pendingMap.set(p.phoneNumber, p));
+
+      // 2. Process list rapidly
       list.forEach(num => {
         const { isValid, normalized } = normalizePhone(num);
         if (!isValid) {
@@ -1340,14 +1350,14 @@
           return;
         }
 
-        const verified = verifiedDb.find(v => v.phoneNumber === normalized && v.status === 'verified');
+        const verified = verifiedMap.get(normalized);
         if (verified) {
           currentBulkResults.push({ original: num, phoneNumber: normalized, status: 'verified', date: new Date(verified.verifiedDate).toLocaleDateString(), info: 'Ready for bundle' });
           verifiedCount++;
           return;
         }
 
-        const pending = pendingDb.find(p => p.phoneNumber === normalized);
+        const pending = pendingMap.get(normalized);
         if (pending) {
           if (pending.status === 'pending') {
             currentBulkResults.push({ original: num, phoneNumber: normalized, status: 'pending', date: new Date(pending.submittedDate).toLocaleDateString(), info: pending.submissionId });
@@ -1369,11 +1379,13 @@
       document.getElementById('bulk-sum-pending').innerText = pendingCount;
       document.getElementById('bulk-sum-notfound').innerText = notFoundCount + invalidCount;
 
-      // Fill table
+      // Fill table safely (limit on-screen rows to 200 to protect mobile browser memory)
       const tbody = document.getElementById('bulk-verify-tbody');
       tbody.innerHTML = '';
       
-      currentBulkResults.forEach(r => {
+      const displayRows = currentBulkResults.slice(0, 200);
+      
+      displayRows.forEach(r => {
         let statusBadge = '';
         if (r.status === 'verified') {
           statusBadge = `<span class="px-2.5 py-0.5 rounded-full text-xs bg-green-500/10 text-green-600 dark:text-green-400 font-bold border border-green-500/20">🟢 VERIFIED</span>`;
@@ -1394,6 +1406,20 @@
           </tr>
         `;
       });
+
+      if (currentBulkResults.length > 200) {
+        tbody.innerHTML += `
+          <tr class="bg-slate-100/50 dark:bg-slate-900/50">
+            <td colspan="4" class="p-3 text-center text-xs font-semibold text-slate-500">
+              Showing first 200 results on screen. Click "Download CSV" to export all ${currentBulkResults.length} verified results.
+            </td>
+          </tr>
+        `;
+      }
+
+      document.getElementById('bulk-verify-results-container').classList.remove('hidden');
+      lucide.createIcons();
+    }
 
       document.getElementById('bulk-verify-results-container').classList.remove('hidden');
       lucide.createIcons();
@@ -1523,6 +1549,15 @@
       let alreadySubmitted = 0;
       let invalid = 0;
 
+      // Fast O(1) Set lookups
+      const verifiedSet = new Set();
+      verifiedDb.forEach(v => {
+        if (v.status === 'verified') verifiedSet.add(v.phoneNumber);
+      });
+
+      const pendingSet = new Set();
+      pendingDb.forEach(p => pendingSet.add(p.phoneNumber));
+
       uniqueInputs.forEach(num => {
         const { isValid, normalized } = normalizePhone(num);
         if (!isValid) {
@@ -1530,12 +1565,12 @@
           return;
         }
 
-        if (verifiedDb.some(v => v.phoneNumber === normalized && v.status === 'verified')) {
+        if (verifiedSet.has(normalized)) {
           alreadyVerified++;
           return;
         }
 
-        if (pendingDb.some(p => p.phoneNumber === normalized)) {
+        if (pendingSet.has(normalized)) {
           alreadySubmitted++;
           return;
         }
@@ -1549,6 +1584,7 @@
           estimatedDate: new Date(Date.now() + 48 * 60 * 60 * 1000)
         });
         submittedCount++;
+        pendingSet.add(normalized); // avoid internal bulk duplicates
       });
 
       saveDB('pending', pendingDb);
